@@ -130,11 +130,11 @@ export function TaskManager() {
   }, [tasks, activeList, isStarredView]);
 
   const counts = useMemo(() => {
-    const map: Record<string, number> = { __starred: 0 };
+    const map: Record<string, number> = { ["__starred"]: 0 };
     for (const t of tasks) {
       if (t.done) continue;
       map[t.listId] = (map[t.listId] ?? 0) + 1;
-      if (t.starred) map.__starred += 1;
+      if (t.starred) map["__starred"] = (map["__starred"] ?? 0) + 1;
     }
     return map;
   }, [tasks]);
@@ -195,7 +195,7 @@ export function TaskManager() {
           <SidebarItem
             label="Starred"
             icon={<Star className="size-4" />}
-            count={counts.__starred}
+            count={counts["__starred"] ?? 0}
             active={isStarredView}
             onClick={() => setActiveList("__starred")}
           />
