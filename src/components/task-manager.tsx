@@ -7,6 +7,9 @@ import {
   ListChecks,
   CalendarDays,
   X,
+  Search,
+  Pencil,
+  Tag as TagIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,9 +22,12 @@ export type Task = {
   starred: boolean;
   listId: string;
   createdAt: number;
+  tags?: string[];
 };
 
 export type TaskList = { id: string; name: string };
+
+type StatusFilter = "all" | "open" | "done";
 
 const STORAGE_KEY = "tasks.v1";
 
@@ -43,6 +49,7 @@ const seedTasks = (): Task[] => [
     starred: true,
     listId: "work",
     createdAt: Date.now() - 5000,
+    tags: ["urgent", "report"],
   },
   {
     id: uid(),
@@ -53,6 +60,7 @@ const seedTasks = (): Task[] => [
     starred: false,
     listId: "my-tasks",
     createdAt: Date.now() - 4000,
+    tags: ["health"],
   },
   {
     id: uid(),
@@ -63,6 +71,7 @@ const seedTasks = (): Task[] => [
     starred: false,
     listId: "my-tasks",
     createdAt: Date.now() - 3000,
+    tags: ["home"],
   },
   {
     id: uid(),
@@ -73,6 +82,7 @@ const seedTasks = (): Task[] => [
     starred: false,
     listId: "groceries",
     createdAt: Date.now() - 2000,
+    tags: [],
   },
 ];
 
@@ -88,6 +98,16 @@ function formatDue(due: string) {
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
+const parseTags = (value: string) =>
+  Array.from(
+    new Set(
+      value
+        .split(",")
+        .map((t) => t.trim().toLowerCase())
+        .filter(Boolean),
+    ),
+  );
+
 export function TaskManager() {
   const [lists, setLists] = useState<TaskList[]>(defaultLists);
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -96,6 +116,9 @@ export function TaskManager() {
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
   const [showDone, setShowDone] = useState(true);
   const [hydrated, setHydrated] = useState(false);
+  const [query, setQuery] = useState("");
+  const [status, setStatus] = useState<StatusFilter>("all");
+  const [activeTag, setActiveTag] = useState<string>("");
 
   useEffect(() => {
     try {
@@ -119,15 +142,33 @@ export function TaskManager() {
   }, [lists, tasks, hydrated]);
 
   const isStarredView = activeList === "__starred";
+
+  const allTags = useMemo(() => {
+    const set = new Set<string>();
+    for (const t of tasks) for (const tag of t.tags ?? []) set.add(tag);
+    return Array.from(set).sort();
+  }, [tasks]);
+
   const visible = useMemo(() => {
-    const inScope = tasks.filter((t) =>
-      isStarredView ? t.starred : t.listId === activeList,
-    );
+    const q = query.trim().toLowerCase();
+    const inScope = tasks.filter((t) => {
+      if (isStarredView ? !t.starred : t.listId !== activeList) return false;
+      if (activeTag && !(t.tags ?? []).includes(activeTag)) return false;
+      if (status === "open" && t.done) return false;
+      if (status === "done" && !t.done) return false;
+      if (q) {
+        const hay = [t.title, t.notes, ...(t.tags ?? [])].join(" ").toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
     return {
       open: inScope.filter((t) => !t.done).sort((a, b) => a.createdAt - b.createdAt),
       done: inScope.filter((t) => t.done).sort((a, b) => b.createdAt - a.createdAt),
     };
-  }, [tasks, activeList, isStarredView]);
+  }, [tasks, activeList, isStarredView, query, status, activeTag]);
+
+  const filtersActive = Boolean(query.trim() || activeTag || status !== "all");
 
   const counts = useMemo(() => {
     const map: Record<string, number> = { ["__starred"]: 0 };
@@ -155,6 +196,7 @@ export function TaskManager() {
         starred: isStarredView,
         listId: isStarredView ? "my-tasks" : activeList,
         createdAt: Date.now(),
+        tags: activeTag ? [activeTag] : [],
       },
     ]);
     setDraft("");
@@ -174,6 +216,28 @@ export function TaskManager() {
     const id = uid();
     setLists((prev) => [...prev, { id, name }]);
     setActiveList(id);
+  };
+
+  const renameList = (id: string) => {
+    const current = lists.find((l) => l.id === id);
+    const name = window.prompt("Rename list", current?.name ?? "")?.trim();
+    if (!name) return;
+    setLists((prev) => prev.map((l) => (l.id === id ? { ...l, name } : l)));
+  };
+
+  const deleteList = (id: string) => {
+    const list = lists.find((l) => l.id === id);
+    const count = tasks.filter((t) => t.listId === id).length;
+    const ok = window.confirm(
+      `Delete "${list?.name}"${count ? ` and its ${count} task${count > 1 ? "s" : ""}` : ""}?`,
+    );
+    if (!ok) return;
+    setTasks((prev) => prev.filter((t) => t.listId !== id));
+    setLists((prev) => {
+      const next = prev.filter((l) => l.id !== id);
+      setActiveList((cur) => (cur === id ? (next[0]?.id ?? "__starred") : cur));
+      return next;
+    });
   };
 
   const activeName = isStarredView
@@ -209,6 +273,8 @@ export function TaskManager() {
               count={counts[l.id] ?? 0}
               active={activeList === l.id}
               onClick={() => setActiveList(l.id)}
+              onRename={() => renameList(l.id)}
+              onDelete={() => deleteList(l.id)}
             />
           ))}
           <button
@@ -223,13 +289,33 @@ export function TaskManager() {
       {/* Main */}
       <main className="min-w-0 flex-1">
         <header className="mb-6 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h1 className="font-display text-3xl tracking-tight">{activeName}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {visible.open.length} open · {visible.done.length} completed
-            </p>
+          <div className="flex items-end gap-2">
+            <div>
+              <h1 className="font-display text-3xl tracking-tight">{activeName}</h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {visible.open.length} open · {visible.done.length} completed
+              </p>
+            </div>
+            {!isStarredView && lists.some((l) => l.id === activeList) && (
+              <div className="mb-1 flex gap-1">
+                <button
+                  onClick={() => renameList(activeList)}
+                  aria-label="Rename list"
+                  className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                >
+                  <Pencil className="size-4" />
+                </button>
+                <button
+                  onClick={() => deleteList(activeList)}
+                  aria-label="Delete list"
+                  className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                >
+                  <Trash2 className="size-4" />
+                </button>
+              </div>
+            )}
           </div>
-          <div className="flex gap-1 md:hidden">
+          <div className="flex flex-wrap gap-1 md:hidden">
             {[{ id: "__starred", name: "Starred" }, ...lists].map((l) => (
               <button
                 key={l.id}
@@ -246,6 +332,78 @@ export function TaskManager() {
             ))}
           </div>
         </header>
+
+        {/* Filters */}
+        <div className="mb-4 space-y-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex min-w-[12rem] flex-1 items-center gap-2 rounded-xl border border-border bg-card px-3 py-2">
+              <Search className="size-4 shrink-0 text-muted-foreground" />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search tasks, notes, tags"
+                className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+              />
+              {query && (
+                <button
+                  onClick={() => setQuery("")}
+                  aria-label="Clear search"
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <X className="size-4" />
+                </button>
+              )}
+            </div>
+            <div className="flex rounded-xl border border-border bg-card p-1">
+              {(["all", "open", "done"] as StatusFilter[]).map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setStatus(s)}
+                  className={cn(
+                    "rounded-lg px-3 py-1.5 text-xs font-medium capitalize transition-colors",
+                    status === s
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {s === "done" ? "Completed" : s}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {allTags.length > 0 && (
+            <div className="flex flex-wrap items-center gap-1.5">
+              <TagIcon className="size-3.5 text-muted-foreground" />
+              {allTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => setActiveTag((cur) => (cur === tag ? "" : tag))}
+                  className={cn(
+                    "rounded-full border px-2.5 py-1 text-xs transition-colors",
+                    activeTag === tag
+                      ? "border-transparent bg-primary text-primary-foreground"
+                      : "border-border text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  #{tag}
+                </button>
+              ))}
+              {filtersActive && (
+                <button
+                  onClick={() => {
+                    setQuery("");
+                    setStatus("all");
+                    setActiveTag("");
+                  }}
+                  className="ml-1 text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                >
+                  Clear filters
+                </button>
+              )}
+            </div>
+          )}
+        </div>
 
         <div className="rounded-2xl border border-border bg-card shadow-soft">
           <div className="flex items-center gap-3 border-b border-border px-4 py-3">
@@ -279,7 +437,9 @@ export function TaskManager() {
             ))}
             {visible.open.length === 0 && (
               <li className="px-5 py-14 text-center text-sm text-muted-foreground">
-                Nothing here. Add your first task above.
+                {filtersActive
+                  ? "No tasks match these filters."
+                  : "Nothing here. Add your first task above."}
               </li>
             )}
           </ul>
@@ -313,7 +473,7 @@ export function TaskManager() {
       {/* Details panel */}
       {openTask && (
         <div className="fixed inset-0 z-50 flex justify-end bg-foreground/20 backdrop-blur-[2px]">
-          <div className="h-full w-full max-w-sm border-l border-border bg-card p-6 shadow-soft">
+          <div className="h-full w-full max-w-sm overflow-y-auto border-l border-border bg-card p-6 shadow-soft">
             <div className="mb-6 flex items-center justify-between">
               <span className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
                 Task details
@@ -351,6 +511,18 @@ export function TaskManager() {
               />
             </label>
 
+            <label className="mt-3 flex items-center gap-3 rounded-xl border border-border p-3 text-sm">
+              <TagIcon className="size-4 shrink-0 text-muted-foreground" />
+              <input
+                value={(openTask.tags ?? []).join(", ")}
+                onChange={(e) =>
+                  patch(openTask.id, { tags: parseTags(e.target.value) })
+                }
+                placeholder="tags, comma separated"
+                className="w-full bg-transparent outline-none placeholder:text-muted-foreground"
+              />
+            </label>
+
             <div className="mt-6 flex items-center gap-2">
               <button
                 onClick={() => patch(openTask.id, { starred: !openTask.starred })}
@@ -384,27 +556,56 @@ function SidebarItem({
   count,
   active,
   onClick,
+  onRename,
+  onDelete,
 }: {
   label: string;
   icon?: React.ReactNode;
   count: number;
   active: boolean;
   onClick: () => void;
+  onRename?: () => void;
+  onDelete?: () => void;
 }) {
   return (
-    <button
-      onClick={onClick}
+    <div
       className={cn(
-        "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
+        "group flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors",
         active
           ? "bg-accent font-medium text-accent-foreground"
           : "text-muted-foreground hover:bg-accent/60 hover:text-foreground",
       )}
     >
-      {icon}
-      <span className="truncate">{label}</span>
-      {count > 0 && <span className="ml-auto text-xs tabular-nums">{count}</span>}
-    </button>
+      <button onClick={onClick} className="flex min-w-0 flex-1 items-center gap-2 text-left">
+        {icon}
+        <span className="truncate">{label}</span>
+      </button>
+      {count > 0 && (
+        <span className="text-xs tabular-nums group-hover:hidden">{count}</span>
+      )}
+      {(onRename || onDelete) && (
+        <span className="hidden items-center gap-1 group-hover:flex">
+          {onRename && (
+            <button
+              onClick={onRename}
+              aria-label={`Rename ${label}`}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <Pencil className="size-3.5" />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={onDelete}
+              aria-label={`Delete ${label}`}
+              className="text-muted-foreground hover:text-destructive"
+            >
+              <Trash2 className="size-3.5" />
+            </button>
+          )}
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -419,6 +620,7 @@ function TaskRow({
   onStar: () => void;
   onOpen: () => void;
 }) {
+  const tags = task.tags ?? [];
   return (
     <li className="group flex items-start gap-3 border-b border-border/60 px-4 py-3 last:border-0 hover:bg-accent/40">
       <button
@@ -443,13 +645,18 @@ function TaskRow({
         >
           {task.title}
         </p>
-        {(task.notes || task.due) && (
-          <p className="mt-0.5 flex items-center gap-2 truncate text-xs text-muted-foreground">
+        {(task.notes || task.due || tags.length > 0) && (
+          <p className="mt-0.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             {task.due && (
               <span className="rounded-full bg-accent px-2 py-0.5 text-accent-foreground">
                 {formatDue(task.due)}
               </span>
             )}
+            {tags.map((tag) => (
+              <span key={tag} className="rounded-full border border-border px-2 py-0.5">
+                #{tag}
+              </span>
+            ))}
             {task.notes && <span className="truncate">{task.notes}</span>}
           </p>
         )}
