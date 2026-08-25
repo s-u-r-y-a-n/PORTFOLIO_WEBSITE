@@ -245,3 +245,83 @@
     }
   }
 }
+
+// ---------------------------------------------------------------------------
+// MUI overrides
+// The classes above are applied to MUI roots, so map the design tokens onto
+// the MUI internals (outline, label, helper text) without touching behaviour.
+// ---------------------------------------------------------------------------
+
+.form-field__input {
+  width: 100%;
+
+  :global(.MuiInputBase-root) {
+    border-radius: var(--radius-md);
+    background-color: transparent;
+    color: var(--foreground);
+    font-family: var(--font-sans);
+  }
+
+  :global(.MuiOutlinedInput-notchedOutline) {
+    border-color: var(--input);
+  }
+
+  :global(.MuiInputBase-root:hover .MuiOutlinedInput-notchedOutline) {
+    border-color: var(--border);
+  }
+
+  :global(.MuiInputBase-root.Mui-focused .MuiOutlinedInput-notchedOutline) {
+    border-color: var(--ring);
+    border-width: 1px;
+    box-shadow: 0 0 0 1px var(--ring);
+  }
+
+  :global(.MuiInputBase-root.Mui-error .MuiOutlinedInput-notchedOutline) {
+    border-color: var(--destructive);
+  }
+
+  :global(.MuiInputLabel-root) {
+    color: var(--muted-foreground);
+    font-family: var(--font-sans);
+  }
+
+  :global(.MuiInputLabel-root.Mui-focused) {
+    color: var(--ring);
+  }
+
+  :global(.MuiInputLabel-root.Mui-error) {
+    color: var(--destructive);
+  }
+
+  :global(.MuiFormHelperText-root) {
+    margin-left: 0;
+    font-size: 0.8125rem;
+    color: var(--muted-foreground);
+  }
+
+  :global(.MuiFormHelperText-root.Mui-error) {
+    color: var(--destructive);
+  }
+}
+
+.login-button {
+  &:global(.MuiButton-root) {
+    text-transform: none;
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--primary-foreground);
+    background-color: var(--primary);
+    border-radius: var(--radius-md);
+
+    &:hover {
+      background-color: color-mix(in oklab, var(--primary) 90%, black);
+    }
+
+    &:disabled {
+      color: var(--primary-foreground);
+      background-color: var(--primary);
+      opacity: 0.6;
+    }
+  }
+}
