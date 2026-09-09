@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { TaskManager } from "@/components/task-manager";
+import { Portfolio } from "@/components/portfolio";
 
-const title = "Tasks — a calm task manager";
+const title = "Surya N — Full Stack Developer";
 const description =
-  "Organize your day with simple lists, starred priorities, due dates and notes. A clean, fast task manager in your browser.";
+  "Full Stack Developer building dependable React, Node.js, database, and cloud applications from interface to infrastructure.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -20,5 +20,5 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  return <TaskManager />;
+  return <Portfolio />;
 }
