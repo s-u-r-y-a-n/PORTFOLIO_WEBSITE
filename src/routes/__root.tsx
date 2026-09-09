@@ -77,14 +77,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Tasks" },
-      { name: "description", content: "A calm, fast task manager." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Tasks" },
-      { property: "og:description", content: "A calm, fast task manager." },
+      { title: "Surya N — Full Stack Developer" },
+      { name: "description", content: "Surya N builds dependable full-stack products with React, Node.js, databases, and cloud services." },
+      { name: "author", content: "Surya N" },
+      { property: "og:title", content: "Surya N — Full Stack Developer" },
+      { property: "og:description", content: "Dependable web applications from interface to infrastructure." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -95,7 +94,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter+Tight:wght@400;500;600&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],

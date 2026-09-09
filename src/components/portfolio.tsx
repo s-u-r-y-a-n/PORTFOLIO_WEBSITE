@@ -1,0 +1,330 @@
+import { useEffect, useState, type FormEvent } from "react";
+import {
+  ArrowDown,
+  ArrowUpRight,
+  CheckCircle2,
+  ChevronDown,
+  Download,
+  Github,
+  Linkedin,
+  Mail,
+  Menu,
+  Send,
+  X,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import financeImage from "@/assets/project-finance.jpg";
+import admissionsImage from "@/assets/project-admissions.jpg";
+import commerceImage from "@/assets/project-commerce.jpg";
+
+const navItems = [
+  ["About", "about"],
+  ["Skills", "skills"],
+  ["Work", "work"],
+  ["Experience", "experience"],
+  ["Contact", "contact"],
+] as const;
+
+const skillGroups = [
+  {
+    number: "01",
+    title: "Frontend Architecture",
+    copy: "Interfaces that stay fast, intuitive, and maintainable as products grow.",
+    skills: ["React", "TypeScript", "Next.js", "Redux / Zustand", "Tailwind", "HTML5 / CSS3"],
+    primary: ["React", "TypeScript", "Next.js"],
+  },
+  {
+    number: "02",
+    title: "Backend & APIs",
+    copy: "Reliable service layers designed around clear contracts and safe data flow.",
+    skills: ["Node.js", "Express", "RESTful APIs", "GraphQL", "Auth / JWT", "WebSockets"],
+    primary: ["Node.js", "Express", "RESTful APIs"],
+  },
+  {
+    number: "03",
+    title: "Database & Cloud",
+    copy: "Pragmatic infrastructure that is observable, resilient, and ready to scale.",
+    skills: ["MongoDB", "MySQL", "AWS Services", "Docker", "CI / CD", "Serverless"],
+    primary: ["MongoDB", "AWS Services", "Serverless"],
+  },
+];
+
+const architecture = [
+  ["React Application", "Interfaces & State"],
+  ["API Gateway & Router", "REST, GraphQL, DTO Validation"],
+  ["Security & Guardrails", "JWT, RBAC, Middleware"],
+  ["Node.js Core Services", "Express, Async Logic, WebSockets"],
+  ["Data & Cloud Infrastructure", "MongoDB, AWS, Serverless, S3"],
+] as const;
+
+const projects = [
+  {
+    number: "01",
+    title: "Finance & Expenses Tracker",
+    type: "FINTECH · FULL STACK",
+    image: financeImage,
+    description: "A secure financial command center that turns daily transactions into useful, actionable insight.",
+    highlights: ["Role-aware expense workflows", "Live analytics and category trends", "Optimized relational data model"],
+    stack: ["Node.js", "Express", "MySQL", "React", "Chart.js"],
+  },
+  {
+    number: "02",
+    title: "Admission & Student Management",
+    type: "EDTECH · SERVERLESS",
+    image: admissionsImage,
+    description: "A serverless operations platform for the complete student journey, from enquiry to enrollment.",
+    highlights: ["Event-driven admissions pipeline", "Granular access and audit trails", "Scalable AWS infrastructure"],
+    stack: ["Node.js", "AWS SAM", "DynamoDB", "React"],
+  },
+  {
+    number: "03",
+    title: "Scalable Commerce Platform",
+    type: "COMMERCE · SAAS",
+    image: commerceImage,
+    description: "A modular storefront and operations suite built for conversion, dependable payments, and growth.",
+    highlights: ["Stripe checkout and webhooks", "Inventory and order orchestration", "Reusable storefront system"],
+    stack: ["MERN Stack", "Stripe", "Tailwind"],
+  },
+];
+
+function scrollTo(id: string) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+}
+
+export function Portfolio() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [typedName, setTypedName] = useState("");
+  const [sent, setSent] = useState(false);
+
+  useEffect(() => {
+    const text = "Hi, I'm Surya N.";
+    if (typedName.length >= text.length) return;
+    const timer = window.setTimeout(() => setTypedName(text.slice(0, typedName.length + 1)), 72);
+    return () => window.clearTimeout(timer);
+  }, [typedName]);
+
+  const submitContact = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!event.currentTarget.reportValidity()) return;
+    setSent(true);
+    event.currentTarget.reset();
+  };
+
+  return (
+    <div className="portfolio-shell">
+      <header className="fixed inset-x-0 top-4 z-50 px-4 sm:top-6">
+        <nav className="glass-nav mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center px-3 py-2" aria-label="Primary navigation">
+          <a href="#top" className="flex min-w-0 items-center gap-3 rounded-full pr-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary font-mono text-xs font-bold text-primary-foreground">SN</span>
+            <span className="truncate text-sm font-semibold">Surya N</span>
+          </a>
+          <div className="hidden items-center gap-1 md:flex">
+            {navItems.map(([label, id]) => (
+              <a key={id} href={`#${id}`} className="nav-link">{label}</a>
+            ))}
+            <Button asChild variant="outline" className="ml-2 h-10 rounded-full border-border bg-secondary/60 px-4 text-xs backdrop-blur-xl">
+              <a href="/surya-n-resume.pdf" download><Download /> Resume <span className="font-mono text-[10px] text-muted-foreground">PDF</span></a>
+            </Button>
+          </div>
+          <Button variant="ghost" size="icon" className="rounded-full md:hidden" aria-label={menuOpen ? "Close menu" : "Open menu"} onClick={() => setMenuOpen((open) => !open)}>
+            {menuOpen ? <X /> : <Menu />}
+          </Button>
+          {menuOpen && (
+            <div className="col-span-2 grid gap-1 border-t border-border/60 px-1 pt-3 pb-1 md:hidden">
+              {navItems.map(([label, id]) => (
+                <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm text-muted-foreground hover:bg-accent hover:text-foreground">{label}</a>
+              ))}
+              <a href="/surya-n-resume.pdf" download className="mt-1 flex items-center justify-between rounded-lg bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground">Resume (PDF)<Download className="size-4" /></a>
+            </div>
+          )}
+        </nav>
+      </header>
+
+      <main id="top">
+        <section className="relative flex min-h-[94vh] items-center overflow-hidden px-5 pt-28 pb-16 sm:px-8 lg:px-12" aria-labelledby="hero-title">
+          <div className="hero-grid" aria-hidden="true" />
+          <div className="relative mx-auto grid w-full max-w-7xl items-center gap-16 lg:grid-cols-[1.08fr_.92fr]">
+            <div className="reveal max-w-3xl">
+              <div className="status-chip mb-8"><span className="pulse-dot" />Available for full-stack opportunities</div>
+              <h1 id="hero-title" className="text-[clamp(3.2rem,8vw,7.5rem)] font-semibold leading-[.89] tracking-normal">
+                <span className="block min-h-[1em]">{typedName}<span className="type-cursor">|</span></span>
+                <span className="text-gradient mt-3 block">Full Stack<br className="hidden sm:block" /> Developer.</span>
+              </h1>
+              <p className="mt-8 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">I build dependable web applications from interface to infrastructure, with React, Node.js, MongoDB, and modern cloud services.</p>
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <Button size="lg" onClick={() => scrollTo("work")} className="h-13 rounded-full px-6 text-sm shadow-[var(--shadow-accent)]">View projects <ArrowDown /></Button>
+                <Button asChild size="lg" variant="outline" className="h-13 rounded-full border-border bg-secondary/60 px-6 text-sm backdrop-blur-xl">
+                  <a href="/surya-n-resume.pdf" download>Download resume <span className="font-mono text-[10px] text-muted-foreground">PDF</span></a>
+                </Button>
+              </div>
+              <div className="mt-7 flex flex-wrap gap-2">
+                <SocialLink icon={<Github />} label="GitHub" href="https://github.com/" />
+                <SocialLink icon={<Linkedin />} label="LinkedIn" href="https://linkedin.com/" />
+                <SocialLink icon={<Mail />} label="Email" href="mailto:surya@example.com" />
+              </div>
+            </div>
+            <Terminal />
+          </div>
+          <div className="absolute bottom-7 left-1/2 hidden -translate-x-1/2 items-center gap-2 font-mono text-[10px] tracking-[.18em] text-muted-foreground uppercase lg:flex">Scroll to explore <ChevronDown className="size-3" /></div>
+        </section>
+
+        <section id="about" className="section-wrap border-t border-border/50" aria-labelledby="about-title">
+          <SectionLabel number="01" label="About" />
+          <div className="grid gap-10 lg:grid-cols-2 lg:gap-24">
+            <h2 id="about-title" className="section-title">Building products with clarity and intent.</h2>
+            <div className="space-y-6 text-base leading-8 text-muted-foreground">
+              <p className="text-xl leading-8 text-foreground">With 1.5+ years in professional engineering, I turn product intent into reliable software that people can trust.</p>
+              <p>My approach connects thoughtful interfaces to resilient APIs, deliberate database schemas, and cloud architecture that is easy to operate. The result is less friction for users—and fewer surprises for teams.</p>
+            </div>
+          </div>
+          <div className="mt-16 grid gap-4 md:grid-cols-3">
+            <Metric value="1.5+ yrs" label="Professional Experience" />
+            <Metric value="React + Node" label="Primary Stack & Cloud Focus" />
+            <Metric value="End-to-End" label="Architecture & Systems Thinking" />
+          </div>
+        </section>
+
+        <section id="skills" className="section-wrap" aria-labelledby="skills-title">
+          <SectionLabel number="02" label="Capabilities" />
+          <h2 id="skills-title" className="section-title max-w-3xl">The stack behind the work.</h2>
+          <div className="mt-14 grid gap-4 lg:grid-cols-3">
+            {skillGroups.map((group) => (
+              <article key={group.number} className="glass-card flex min-h-[29rem] flex-col p-6 sm:p-8">
+                <span className="font-mono text-xs text-accent-amber">/{group.number}</span>
+                <h3 className="mt-12 text-2xl font-semibold">{group.title}</h3>
+                <p className="mt-4 text-sm leading-6 text-muted-foreground">{group.copy}</p>
+                <div className="mt-auto flex flex-wrap gap-2 pt-9">
+                  {group.skills.map((skill) => <span key={skill} className={group.primary.includes(skill) ? "skill-pill skill-pill-primary" : "skill-pill"}>{skill}</span>)}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="section-wrap grid gap-14 lg:grid-cols-[.78fr_1.22fr] lg:gap-24" aria-labelledby="architecture-title">
+          <div className="lg:sticky lg:top-32 lg:self-start">
+            <SectionLabel number="03" label="Backend thinking" />
+            <h2 id="architecture-title" className="section-title">More than a pretty frontend.</h2>
+            <p className="mt-6 max-w-lg text-base leading-7 text-muted-foreground">I engineer the full request lifecycle—from a user's first interaction to the final data write—with security, observability, and graceful failure in mind.</p>
+          </div>
+          <ol className="space-y-3">
+            {architecture.map(([title, description], index) => (
+              <li key={title} className="relative">
+                <div className="architecture-slab grid grid-cols-[auto_minmax(0,1fr)] items-center gap-5 p-5 sm:p-6">
+                  <span className="font-mono text-xs text-primary">{String(index + 1).padStart(2, "0")}</span>
+                  <div className="min-w-0"><h3 className="text-base font-semibold">{title}</h3><p className="mt-1 text-sm text-muted-foreground">{description}</p></div>
+                </div>
+                {index < architecture.length - 1 && <ArrowDown className="relative z-10 mx-auto -my-1 size-4 text-primary" aria-hidden="true" />}
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section id="work" className="section-wrap" aria-labelledby="work-title">
+          <SectionLabel number="04" label="Selected work" />
+          <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+            <h2 id="work-title" className="section-title max-w-2xl">Products built for real-world complexity.</h2>
+            <p className="max-w-xs text-sm leading-6 text-muted-foreground">Selected systems spanning financial analytics, education operations, and commerce.</p>
+          </div>
+          <div className="mt-14 space-y-8">
+            {projects.map((project, index) => <ProjectCard key={project.number} project={project} reversed={index % 2 === 1} />)}
+          </div>
+        </section>
+
+        <section id="experience" className="section-wrap" aria-labelledby="experience-title">
+          <SectionLabel number="05" label="Experience" />
+          <h2 id="experience-title" className="section-title">Shipping across the stack.</h2>
+          <article className="glass-card mt-14 grid gap-10 p-6 sm:p-10 lg:grid-cols-[.35fr_.65fr]">
+            <div>
+              <div className="status-chip"><span className="pulse-dot" />Current role</div>
+              <p className="mt-7 font-mono text-xs text-muted-foreground">2024 — PRESENT</p>
+            </div>
+            <div>
+              <p className="font-mono text-xs text-primary">FULL STACK DEVELOPER</p>
+              <h3 className="mt-3 text-2xl font-semibold sm:text-3xl">Professional Engineering Experience</h3>
+              <ul className="mt-8 grid gap-5 text-sm leading-7 text-muted-foreground">
+                <li className="experience-item">Delivered end-to-end product features across React interfaces, Node.js APIs, data models, and cloud deployments.</li>
+                <li className="experience-item">Improved backend response paths through query optimization, predictable contracts, and robust async workflows.</li>
+                <li className="experience-item">Built reusable frontend systems that increased delivery consistency while preserving accessibility and performance.</li>
+              </ul>
+            </div>
+          </article>
+        </section>
+
+        <section id="contact" className="section-wrap pb-12" aria-labelledby="contact-title">
+          <div className="contact-panel grid gap-14 p-6 sm:p-10 lg:grid-cols-[.8fr_1.2fr] lg:p-14">
+            <div>
+              <SectionLabel number="06" label="Contact" />
+              <h2 id="contact-title" className="section-title">Let’s build something dependable.</h2>
+              <p className="mt-6 max-w-md text-base leading-7 text-muted-foreground">Have a product challenge, a role, or an idea worth exploring? I’d like to hear about it.</p>
+              <a href="mailto:surya@example.com" className="mt-9 inline-flex items-center gap-3 rounded-full border border-border bg-secondary/50 px-4 py-3 text-sm transition-colors hover:border-primary/60"><Mail className="size-4 text-primary" />surya@example.com</a>
+              <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><span className="pulse-dot" />Available for the right opportunity</div>
+            </div>
+            <form onSubmit={submitContact} className="grid gap-5" aria-label="Contact form">
+              <FloatingField label="Your name" name="name" type="text" required />
+              <FloatingField label="Email address" name="email" type="email" required />
+              <label className="floating-field"><textarea name="message" placeholder=" " rows={5} required /><span>Tell me about your project</span></label>
+              <Button type="submit" size="lg" className="h-13 rounded-full sm:justify-self-start">
+                {sent ? <><CheckCircle2 /> Message ready</> : <>Send message <Send /></>}
+              </Button>
+              {sent && <p role="status" className="text-sm text-primary">Thanks — I’ll get back to you soon.</p>}
+            </form>
+          </div>
+        </section>
+      </main>
+
+      <footer className="mx-auto flex max-w-7xl flex-col gap-5 border-t border-border/60 px-5 py-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
+        <p>© 2026 Surya N. Built with intent.</p>
+        <div className="flex items-center gap-5"><a href="https://github.com/" aria-label="GitHub" className="hover:text-foreground"><Github className="size-4" /></a><a href="https://linkedin.com/" aria-label="LinkedIn" className="hover:text-foreground"><Linkedin className="size-4" /></a><a href="#top" className="flex items-center gap-2 hover:text-foreground">Back to top <ArrowUpRight className="size-3" /></a></div>
+      </footer>
+    </div>
+  );
+}
+
+function Terminal() {
+  return (
+    <aside className="terminal-window reveal-delay" aria-label="Code profile preview">
+      <div className="flex items-center justify-between border-b border-border/70 px-5 py-4">
+        <div className="flex gap-2" aria-hidden="true"><span className="traffic bg-accent-coral" /><span className="traffic bg-accent-amber" /><span className="traffic bg-accent-lime" /></div>
+        <span className="font-mono text-[11px] text-muted-foreground">surya-stack.js</span><span className="w-12" />
+      </div>
+      <pre className="overflow-x-auto p-6 font-mono text-[12px] leading-7 sm:p-8 sm:text-sm"><code><span className="code-dim">01</span>  <span className="code-coral">const</span> developer = {"{"}{"\n"}<span className="code-dim">02</span>    name: <span className="code-lime">'Surya N'</span>,{"\n"}<span className="code-dim">03</span>    role: <span className="code-lime">'Full Stack Developer'</span>,{"\n"}<span className="code-dim">04</span>    crafts: [{"\n"}<span className="code-dim">05</span>      <span className="code-lime">'resilient APIs'</span>,{"\n"}<span className="code-dim">06</span>      <span className="code-lime">'thoughtful interfaces'</span>,{"\n"}<span className="code-dim">07</span>      <span className="code-lime">'cloud systems'</span>{"\n"}<span className="code-dim">08</span>    ],{"\n"}<span className="code-dim">09</span>    available: <span className="text-primary">true</span>{"\n"}<span className="code-dim">10</span>  {"}"};{"\n\n"}<span className="code-dim">11</span>  developer.<span className="text-primary">build</span>();<span className="type-cursor">_</span></code></pre>
+      <div className="flex items-center justify-between border-t border-border/60 px-5 py-3 font-mono text-[10px] text-muted-foreground"><span>node v22.0</span><span className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-accent-lime" />ready</span></div>
+    </aside>
+  );
+}
+
+function SectionLabel({ number, label }: { number: string; label: string }) {
+  return <div className="mb-7 flex items-center gap-3 font-mono text-[11px] tracking-[.16em] uppercase"><span className="text-primary">{number}</span><span className="h-px w-8 bg-border" /><span className="text-muted-foreground">{label}</span></div>;
+}
+
+function Metric({ value, label }: { value: string; label: string }) {
+  return <article className="glass-card p-6 sm:p-7"><p className="text-2xl font-semibold text-primary">{value}</p><p className="mt-3 text-sm text-muted-foreground">{label}</p></article>;
+}
+
+function SocialLink({ icon, label, href }: { icon: React.ReactNode; label: string; href: string }) {
+  return <a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noreferrer" className="social-pill group">{icon}<span>{label}</span><ArrowUpRight className="size-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></a>;
+}
+
+function ProjectCard({ project, reversed }: { project: (typeof projects)[number]; reversed: boolean }) {
+  return (
+    <article className="project-card grid overflow-hidden lg:grid-cols-2">
+      <div className={`group relative min-h-72 overflow-hidden lg:min-h-[32rem] ${reversed ? "lg:order-2" : ""}`}>
+        <img src={project.image} alt={`${project.title} interface preview`} loading="lazy" width={1280} height={800} className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.035]" />
+        <span className="absolute top-5 left-5 rounded-full border border-border bg-background/80 px-3 py-1.5 font-mono text-[10px] backdrop-blur-xl">PROJECT {project.number}</span>
+      </div>
+      <div className="flex flex-col p-6 sm:p-9 lg:p-11">
+        <p className="font-mono text-[10px] tracking-[.16em] text-primary">{project.type}</p>
+        <h3 className="mt-5 text-3xl font-semibold leading-tight">{project.title}</h3>
+        <p className="mt-5 text-sm leading-7 text-muted-foreground">{project.description}</p>
+        <ul className="mt-7 space-y-3 text-sm">{project.highlights.map((item) => <li key={item} className="flex gap-3"><span className="text-primary">↳</span>{item}</li>)}</ul>
+        <div className="mt-7 flex flex-wrap gap-2">{project.stack.map((item) => <span key={item} className="tech-chip">{item}</span>)}</div>
+        <div className="mt-auto flex flex-wrap gap-3 pt-9"><Button asChild variant="outline" className="rounded-full bg-secondary/60"><a href="#contact">Live Demo <ArrowUpRight /></a></Button><Button asChild variant="ghost" className="rounded-full"><a href="https://github.com/" target="_blank" rel="noreferrer">GitHub <ArrowUpRight /></a></Button></div>
+      </div>
+    </article>
+  );
+}
+
+function FloatingField({ label, name, type, required }: { label: string; name: string; type: string; required?: boolean }) {
+  return <label className="floating-field"><input name={name} type={type} placeholder=" " required={required} /><span>{label}</span></label>;
+}
