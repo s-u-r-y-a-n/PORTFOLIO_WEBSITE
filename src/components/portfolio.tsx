@@ -152,8 +152,9 @@ export function Portfolio() {
           revealObserver.unobserve(entry.target);
         }
       }),
-      { threshold: 0.12, rootMargin: "0px 0px -8%" },
+      { threshold: 0, rootMargin: "0px 0px -6%" },
     );
+
 
     const visible = new Map<string, number>();
     const resolveActive = () => {
@@ -183,14 +184,28 @@ export function Portfolio() {
       { threshold: [0, 0.15, 0.35, 0.6, 0.9], rootMargin: "-20% 0px -45%" },
     );
 
+    // safety net: reveal anything already inside the viewport (e.g. the footer at page bottom)
+    const revealNearBottom = () => {
+      revealItems.forEach((item) => {
+        if (item.classList.contains("is-visible")) return;
+        if (item.getBoundingClientRect().top < window.innerHeight - 24) {
+          item.classList.add("is-visible");
+          revealObserver.unobserve(item);
+        }
+      });
+    };
+
     revealItems.forEach((item) => revealObserver.observe(item));
     sectionItems.forEach((item) => sectionObserver.observe(item));
     window.addEventListener("scroll", resolveActive, { passive: true });
+    window.addEventListener("scroll", revealNearBottom, { passive: true });
     return () => {
       revealObserver.disconnect();
       sectionObserver.disconnect();
       window.removeEventListener("scroll", resolveActive);
+      window.removeEventListener("scroll", revealNearBottom);
     };
+
   }, []);
 
   const measureIndicator = useCallback(() => {
@@ -272,56 +287,59 @@ export function Portfolio() {
         <section className="relative flex min-h-[94vh] items-center overflow-hidden px-5 pt-28 pb-16 sm:px-8 lg:px-12" aria-labelledby="hero-title">
           <div className="hero-grid" aria-hidden="true" />
           <div className="relative mx-auto grid w-full max-w-7xl items-center gap-16 lg:grid-cols-[1.08fr_.92fr]">
-            <div className="reveal max-w-3xl">
-              <div className="status-chip mb-8"><span className="pulse-dot" />Available for full-stack opportunities</div>
-               <h1 id="hero-title" className="font-semibold leading-[.95] tracking-normal">
+            <div className="max-w-3xl">
+              <div className="status-chip hero-in hero-d1 mb-8"><span className="pulse-dot" />Available for full-stack opportunities</div>
+               <h1 id="hero-title" className="hero-in hero-d2 font-semibold leading-[.95] tracking-normal">
                 <span className="block min-h-[1em] text-[clamp(2.35rem,5.4vw,5.25rem)]">{typedName}<span className="type-cursor">|</span></span>
                 <span className="text-gradient mt-3 block text-[clamp(1.8rem,4.15vw,3.9rem)]">Full Stack<br className="hidden sm:block" /> Developer.</span>
               </h1>
-              <p className="mt-8 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">I build dependable web applications from interface to infrastructure, with React, Node.js, MongoDB, and modern cloud services.</p>
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <p className="hero-in hero-d3 mt-8 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">I build dependable web applications from interface to infrastructure, with React, Node.js, MongoDB, and modern cloud services.</p>
+              <div className="hero-in-scale hero-d4 mt-9 flex flex-col gap-3 sm:flex-row">
                 <Button size="lg" onClick={() => scrollTo("work")} className="h-13 rounded-full px-6 text-sm shadow-[var(--shadow-accent)]">View projects <ArrowDown /></Button>
                 <Button asChild size="lg" variant="outline" className="h-13 rounded-full border-border bg-secondary/60 px-6 text-sm backdrop-blur-xl">
                   <a href="/surya-n-resume.pdf" download>Download resume <span className="font-mono text-[10px] text-muted-foreground">PDF</span></a>
                 </Button>
               </div>
-              <div className="mt-7 flex flex-wrap gap-2">
+              <div className="hero-in hero-d5 mt-7 flex flex-wrap gap-2">
                 <SocialLink icon={<Github />} label="GitHub" href="https://github.com/" />
                 <SocialLink icon={<Linkedin />} label="LinkedIn" href="https://linkedin.com/" />
                 <SocialLink icon={<Mail />} label="Email" href="mailto:surya@example.com" />
               </div>
             </div>
+
             <Terminal />
           </div>
           <div className="absolute bottom-7 left-1/2 hidden -translate-x-1/2 items-center gap-2 font-mono text-[10px] tracking-[.18em] text-muted-foreground uppercase lg:flex">Scroll to explore <ChevronDown className="size-3" /></div>
         </section>
 
-        <section id="about" className="section-wrap scroll-reveal border-t border-border/50" aria-labelledby="about-title">
-          <SectionLabel number="01" label="About" />
+        <section id="about" className="section-wrap scroll-reveal reveal-plain border-t border-border/50" aria-labelledby="about-title">
+          <div className="reveal-up"><SectionLabel number="01" label="About" /></div>
           <div className="grid gap-10 lg:grid-cols-2 lg:gap-24">
-            <h2 id="about-title" className="section-title">Building products with clarity and intent.</h2>
-             <div className="space-y-6 text-base leading-8 text-muted-foreground">
+            <h2 id="about-title" className="section-title reveal-x-left d-1">Building products with clarity and intent.</h2>
+             <div className="reveal-x-right d-2 space-y-6 text-base leading-8 text-muted-foreground">
                <p className="text-lg leading-8 text-foreground">With 1.5+ years in professional engineering, I turn product intent into reliable software that people can trust.</p>
               <p>My approach connects thoughtful interfaces to resilient APIs, deliberate database schemas, and cloud architecture that is easy to operate. The result is less friction for users—and fewer surprises for teams.</p>
             </div>
           </div>
           <div className="mt-16 grid gap-4 md:grid-cols-3">
-            <Metric value="1.5+ yrs" label="Professional Experience" />
-            <Metric value="React + Node" label="Primary Stack & Cloud Focus" />
-            <Metric value="End-to-End" label="Architecture & Systems Thinking" />
+            <div className="reveal-up d-2"><Metric value="1.5+ yrs" label="Professional Experience" /></div>
+            <div className="reveal-up d-3"><Metric value="React + Node" label="Primary Stack & Cloud Focus" /></div>
+            <div className="reveal-up d-4"><Metric value="End-to-End" label="Architecture & Systems Thinking" /></div>
           </div>
         </section>
 
-        <section id="skills" className="section-wrap scroll-reveal" aria-labelledby="skills-title">
-          <SectionLabel number="02" label="Capabilities" />
-          <h2 id="skills-title" className="section-title max-w-3xl">The stack behind the work.</h2>
+
+        <section id="skills" className="section-wrap scroll-reveal reveal-plain" aria-labelledby="skills-title">
+          <div className="reveal-up"><SectionLabel number="02" label="Capabilities" /></div>
+          <h2 id="skills-title" className="section-title reveal-up d-1 max-w-3xl">The stack behind the work.</h2>
+
           <div className="mt-14 grid gap-4 lg:grid-cols-3">
             {skillGroups.map((group) => (
                <article key={group.number} className="glass-card reveal-child flex min-h-[29rem] flex-col p-6 sm:p-8">
                 <span className="font-mono text-xs text-accent-amber">/{group.number}</span>
                  <h3 className="mt-12 text-xl font-semibold sm:text-[1.35rem]">{group.title}</h3>
                 <p className="mt-4 text-sm leading-6 text-muted-foreground">{group.copy}</p>
-                <div className="mt-auto flex flex-wrap gap-2 pt-9">
+                <div className="pill-stagger mt-auto flex flex-wrap gap-2 pt-9">
                   {group.skills.map((skill) => <span key={skill} className={group.primary.includes(skill) ? "skill-pill skill-pill-primary" : "skill-pill"}>{skill}</span>)}
                 </div>
               </article>
@@ -329,8 +347,9 @@ export function Portfolio() {
           </div>
         </section>
 
-        <section className="section-wrap scroll-reveal grid gap-14 lg:grid-cols-[.78fr_1.22fr] lg:gap-24" aria-labelledby="architecture-title">
-          <div className="lg:sticky lg:top-32 lg:self-start">
+        <section className="section-wrap scroll-reveal reveal-plain grid gap-14 lg:grid-cols-[.78fr_1.22fr] lg:gap-24" aria-labelledby="architecture-title">
+          <div className="reveal-x-left lg:sticky lg:top-32 lg:self-start">
+
             <SectionLabel number="03" label="Backend thinking" />
             <h2 id="architecture-title" className="section-title">More than a pretty frontend.</h2>
             <p className="mt-6 max-w-lg text-base leading-7 text-muted-foreground">I engineer the full request lifecycle—from a user's first interaction to the final data write—with security, observability, and graceful failure in mind.</p>
@@ -348,21 +367,29 @@ export function Portfolio() {
           </ol>
         </section>
 
-        <section id="work" className="section-wrap scroll-reveal" aria-labelledby="work-title">
-          <SectionLabel number="04" label="Selected work" />
+        <section id="work" className="section-wrap scroll-reveal reveal-plain" aria-labelledby="work-title">
+          <div className="reveal-up"><SectionLabel number="04" label="Selected work" /></div>
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
-            <h2 id="work-title" className="section-title max-w-2xl">Products built for real-world complexity.</h2>
-            <p className="max-w-xs text-sm leading-6 text-muted-foreground">Selected systems spanning financial analytics, education operations, and commerce.</p>
+            <h2 id="work-title" className="section-title reveal-up d-1 max-w-2xl">Products built for real-world complexity.</h2>
+            <p className="reveal-up d-2 max-w-xs text-sm leading-6 text-muted-foreground">Selected systems spanning financial analytics, education operations, and commerce.</p>
           </div>
           <div className="mt-14 space-y-8">
-            {projects.map((project, index) => <ProjectCard key={project.number} project={project} reversed={index % 2 === 1} />)}
+            {projects.map((project, index) => (
+              <div key={project.number} className="scroll-reveal reveal-plain">
+                <div className={`project-reveal ${index % 2 === 1 ? "from-right" : "from-left"}`}>
+                  <ProjectCard project={project} reversed={index % 2 === 1} />
+                </div>
+              </div>
+            ))}
+
           </div>
         </section>
 
-        <section id="experience" className="section-wrap scroll-reveal" aria-labelledby="experience-title">
-          <SectionLabel number="05" label="Experience" />
-          <h2 id="experience-title" className="section-title">Shipping across the stack.</h2>
-          <article className="glass-card mt-14 grid gap-10 p-6 sm:p-10 lg:grid-cols-[.35fr_.65fr]">
+
+        <section id="experience" className="section-wrap scroll-reveal reveal-plain" aria-labelledby="experience-title">
+          <div className="reveal-up"><SectionLabel number="05" label="Experience" /></div>
+          <h2 id="experience-title" className="section-title reveal-up d-1">Shipping across the stack.</h2>
+          <article className="glass-card reveal-zoom d-2 mt-14 grid gap-10 p-6 sm:p-10 lg:grid-cols-[.35fr_.65fr]">
             <div>
               <div className="status-chip"><span className="pulse-dot" />Current role</div>
               <p className="mt-7 font-mono text-xs text-muted-foreground">2024 — PRESENT</p>
@@ -371,24 +398,25 @@ export function Portfolio() {
               <p className="font-mono text-xs text-primary">FULL STACK DEVELOPER</p>
                <h3 className="mt-3 text-xl font-semibold sm:text-2xl">Professional Engineering Experience</h3>
               <ul className="mt-8 grid gap-5 text-sm leading-7 text-muted-foreground">
-                <li className="experience-item">Delivered end-to-end product features across React interfaces, Node.js APIs, data models, and cloud deployments.</li>
-                <li className="experience-item">Improved backend response paths through query optimization, predictable contracts, and robust async workflows.</li>
-                <li className="experience-item">Built reusable frontend systems that increased delivery consistency while preserving accessibility and performance.</li>
+                <li className="experience-item timeline-item">Delivered end-to-end product features across React interfaces, Node.js APIs, data models, and cloud deployments.</li>
+                <li className="experience-item timeline-item">Improved backend response paths through query optimization, predictable contracts, and robust async workflows.</li>
+                <li className="experience-item timeline-item">Built reusable frontend systems that increased delivery consistency while preserving accessibility and performance.</li>
               </ul>
             </div>
           </article>
         </section>
 
-        <section id="contact" className="section-wrap scroll-reveal pb-12" aria-labelledby="contact-title">
+        <section id="contact" className="section-wrap scroll-reveal reveal-plain pb-12" aria-labelledby="contact-title">
           <div className="contact-panel grid gap-14 p-6 sm:p-10 lg:grid-cols-[.8fr_1.2fr] lg:p-14">
             <div>
-              <SectionLabel number="06" label="Contact" />
-              <h2 id="contact-title" className="section-title">Let’s build something dependable.</h2>
-              <p className="mt-6 max-w-md text-base leading-7 text-muted-foreground">Have a product challenge, a role, or an idea worth exploring? I’d like to hear about it.</p>
-              <a href="mailto:surya@example.com" className="mt-9 inline-flex items-center gap-3 rounded-full border border-border bg-secondary/50 px-4 py-3 text-sm transition-colors hover:border-primary/60"><Mail className="size-4 text-primary" />surya@example.com</a>
-              <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground"><span className="pulse-dot" />Available for the right opportunity</div>
+              <div className="reveal-up"><SectionLabel number="06" label="Contact" /></div>
+              <h2 id="contact-title" className="section-title reveal-up d-1">Let’s build something dependable.</h2>
+              <p className="reveal-up d-2 mt-6 max-w-md text-base leading-7 text-muted-foreground">Have a product challenge, a role, or an idea worth exploring? I’d like to hear about it.</p>
+              <div className="reveal-up d-3"><a href="mailto:surya@example.com" className="mt-9 inline-flex items-center gap-3 rounded-full border border-border bg-secondary/50 px-4 py-3 text-sm transition-colors hover:border-primary/60"><Mail className="size-4 text-primary" />surya@example.com</a></div>
+              <div className="reveal-up d-4 mt-4 flex items-center gap-2 text-xs text-muted-foreground"><span className="pulse-dot" />Available for the right opportunity</div>
             </div>
-            <form onSubmit={submitContact} className="grid gap-5" aria-label="Contact form">
+            <form onSubmit={submitContact} className="reveal-zoom d-2 grid gap-5" aria-label="Contact form">
+
               <FloatingField label="Your name" name="name" type="text" required />
               <FloatingField label="Email address" name="email" type="email" required />
               <label className="floating-field"><textarea name="message" placeholder=" " rows={5} required /><span>Tell me about your project</span></label>
@@ -401,7 +429,7 @@ export function Portfolio() {
         </section>
       </main>
 
-      <footer className="mx-auto flex max-w-7xl flex-col gap-5 border-t border-border/60 px-5 py-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
+      <footer className="scroll-reveal mx-auto flex max-w-7xl flex-col gap-5 border-t border-border/60 px-5 py-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
         <p>© 2026 Surya N. Built with intent.</p>
         <div className="flex items-center gap-5"><a href="https://github.com/" aria-label="GitHub" className="hover:text-foreground"><Github className="size-4" /></a><a href="https://linkedin.com/" aria-label="LinkedIn" className="hover:text-foreground"><Linkedin className="size-4" /></a><a href="#top" className="flex items-center gap-2 hover:text-foreground">Back to top <ArrowUpRight className="size-3" /></a></div>
       </footer>
@@ -436,7 +464,7 @@ function SocialLink({ icon, label, href }: { icon: ReactNode; label: string; hre
 
 function ProjectCard({ project, reversed }: { project: (typeof projects)[number]; reversed: boolean }) {
   return (
-    <article className="project-card reveal-child grid overflow-hidden lg:grid-cols-2">
+    <article className="project-card grid overflow-hidden lg:grid-cols-2">
       <div className={`group relative min-h-72 overflow-hidden lg:min-h-[32rem] ${reversed ? "lg:order-2" : ""}`}>
         <img src={project.image} alt={`${project.title} interface preview`} loading="lazy" width={1280} height={800} className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.035]" />
         <span className="absolute top-5 left-5 rounded-full border border-border bg-background/80 px-3 py-1.5 font-mono text-[10px] backdrop-blur-xl">PROJECT {project.number}</span>
