@@ -175,6 +175,7 @@ export function Portfolio() {
 
   return (
     <div className="portfolio-shell">
+      <CustomCursor />
       <header className={`fixed inset-x-0 top-4 z-50 px-4 transition-transform duration-300 sm:top-6 ${scrolled ? "navbar-scrolled" : ""}`}>
         <nav className="glass-nav mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center px-3 py-2" aria-label="Primary navigation">
           <a href="#top" className="flex min-w-0 items-center gap-3 rounded-full pr-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
