@@ -133,11 +133,25 @@ export function Portfolio() {
   }, [typedName]);
 
   useEffect(() => {
-    const updateScrolled = () => setScrolled(window.scrollY > 24);
-    updateScrolled();
-    window.addEventListener("scroll", updateScrolled, { passive: true });
-    return () => window.removeEventListener("scroll", updateScrolled);
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 24);
+      const delta = y - last;
+      if (Math.abs(delta) > 6) {
+        setHidden(y > 320 && delta > 0);
+        last = y;
+      }
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (menuOpen) setHidden(false);
+  }, [menuOpen]);
+
 
   useEffect(() => {
     const revealItems = Array.from(document.querySelectorAll<HTMLElement>(".scroll-reveal"));
