@@ -280,7 +280,8 @@ html.cursor-press .cursor-ring { width: 26px; height: 26px; opacity: 1; }
 
 @media (hover: hover) and (pointer: fine) {
   html.has-custom-cursor, html.has-custom-cursor body { cursor: none; }
-  html.has-custom-cursor :is(a, button, input, textarea, select, label, [role="button"]) { cursor: none; }
+  html.has-custom-cursor :is(a, button, select, label, [role="button"]) { cursor: none; }
+  html.has-custom-cursor :is(input, textarea) { cursor: text; }
 }
 
 @media (prefers-reduced-motion: reduce) {
