@@ -9,10 +9,15 @@ import {
   Linkedin,
   Mail,
   Menu,
+  Moon,
   Send,
+  Sun,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CustomCursor } from "@/components/custom-cursor";
+import { useSmoothScroll, smoothScrollToId } from "@/hooks/use-smooth-scroll";
+import { useTheme } from "@/hooks/use-theme";
 import financeImage from "@/assets/project-finance.jpg";
 import admissionsImage from "@/assets/project-admissions.jpg";
 import commerceImage from "@/assets/project-commerce.jpg";
@@ -88,7 +93,24 @@ const projects = [
 ];
 
 function scrollTo(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  smoothScrollToId(id);
+}
+
+function ThemeToggle({ className = "" }: { className?: string }) {
+  const { theme, toggle } = useTheme();
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      className={`theme-toggle ${theme === "light" ? "is-light" : ""} ${className}`}
+      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      aria-pressed={theme === "light"}
+      title={theme === "dark" ? "Light mode" : "Dark mode"}
+    >
+      <Moon className="theme-icon theme-icon-moon size-4" aria-hidden="true" />
+      <Sun className="theme-icon theme-icon-sun size-4" aria-hidden="true" />
+    </button>
+  );
 }
 
 export function Portfolio() {
@@ -97,6 +119,7 @@ export function Portfolio() {
   const [sent, setSent] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("top");
+  useSmoothScroll();
 
   useEffect(() => {
     const text = "Hi, I'm Surya N.";
@@ -152,6 +175,7 @@ export function Portfolio() {
 
   return (
     <div className="portfolio-shell">
+      <CustomCursor />
       <header className={`fixed inset-x-0 top-4 z-50 px-4 transition-transform duration-300 sm:top-6 ${scrolled ? "navbar-scrolled" : ""}`}>
         <nav className="glass-nav mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center px-3 py-2" aria-label="Primary navigation">
           <a href="#top" className="flex min-w-0 items-center gap-3 rounded-full pr-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
@@ -165,11 +189,15 @@ export function Portfolio() {
             <Button asChild variant="outline" className="ml-2 h-10 rounded-full border-border bg-secondary/60 px-4 text-xs backdrop-blur-xl">
               <a href="/surya-n-resume.pdf" download><Download /> Resume <span className="font-mono text-[10px] text-muted-foreground">PDF</span></a>
             </Button>
+            <ThemeToggle className="ml-1" />
           </div>
-          <Button variant="ghost" size="icon" className={`menu-toggle relative rounded-full md:hidden ${menuOpen ? "is-open" : ""}`} aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>
-            <Menu className="menu-icon menu-icon-open" />
-            <X className="menu-icon menu-icon-close" />
-          </Button>
+          <div className="flex items-center gap-1 md:hidden">
+            <ThemeToggle />
+            <Button variant="ghost" size="icon" className={`menu-toggle relative rounded-full ${menuOpen ? "is-open" : ""}`} aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>
+              <Menu className="menu-icon menu-icon-open" />
+              <X className="menu-icon menu-icon-close" />
+            </Button>
+          </div>
           <div className={`mobile-menu col-span-2 grid gap-1 md:hidden ${menuOpen ? "is-open" : ""}`} aria-hidden={!menuOpen}>
             <div className="grid gap-1 border-t border-border/60 px-1 pt-3 pb-1">
               {navItems.map(([label, id]) => (

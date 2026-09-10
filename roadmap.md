@@ -11,3 +11,8 @@
 - [x] Add refined navigation, button, pill, card, link, and icon interactions
 - [x] Add accessible viewport reveal animations and mobile menu transitions
 - [x] Verify desktop, tablet, mobile, and reduced-motion presentation
+
+# Scroll, cursor, and theme
+- [x] Slower, damped scrolling with eased section jumps
+- [x] Animated dot + ring cursor with hover states (desktop only)
+- [x] Dark/light themes with dark default and animated toggle
