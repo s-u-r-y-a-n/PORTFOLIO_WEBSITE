@@ -110,6 +110,11 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('portfolio-theme')==='light'){document.documentElement.classList.add('light');document.documentElement.style.colorScheme='light';}}catch(e){}`,
+          }}
+        />
       </head>
       <body>
         {children}
