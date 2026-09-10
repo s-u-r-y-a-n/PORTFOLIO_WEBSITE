@@ -169,20 +169,62 @@ export function Portfolio() {
       { threshold: 0.12, rootMargin: "0px 0px -8%" },
     );
 
+    const visible = new Map<string, number>();
+    const resolveActive = () => {
+      if (window.scrollY < 140) return setActiveSection("top");
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8) {
+        return setActiveSection("contact");
+      }
+      let best = "";
+      let bestRatio = 0;
+      visible.forEach((ratio, id) => {
+        if (ratio > bestRatio) {
+          bestRatio = ratio;
+          best = id;
+        }
+      });
+      if (best) setActiveSection(best);
+    };
+
     const sectionObserver = new IntersectionObserver(
-      (entries) => entries.forEach((entry) => {
-        if (entry.isIntersecting) setActiveSection(entry.target.id);
-      }),
-      { threshold: 0.2, rootMargin: "-25% 0px -55%" },
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) visible.set(entry.target.id, entry.intersectionRatio);
+          else visible.delete(entry.target.id);
+        });
+        resolveActive();
+      },
+      { threshold: [0, 0.15, 0.35, 0.6, 0.9], rootMargin: "-20% 0px -45%" },
     );
 
     revealItems.forEach((item) => revealObserver.observe(item));
     sectionItems.forEach((item) => sectionObserver.observe(item));
+    window.addEventListener("scroll", resolveActive, { passive: true });
     return () => {
       revealObserver.disconnect();
       sectionObserver.disconnect();
+      window.removeEventListener("scroll", resolveActive);
     };
   }, []);
+
+  const measureIndicator = useCallback(() => {
+    const list = navListRef.current;
+    const link = linkRefs.current[activeSection];
+    if (!list || !link) {
+      setIndicator((prev) => ({ ...prev, visible: false }));
+      return;
+    }
+    const listBox = list.getBoundingClientRect();
+    const linkBox = link.getBoundingClientRect();
+    setIndicator({ left: linkBox.left - listBox.left, width: linkBox.width, visible: true });
+  }, [activeSection]);
+
+  useEffect(() => {
+    measureIndicator();
+    window.addEventListener("resize", measureIndicator);
+    return () => window.removeEventListener("resize", measureIndicator);
+  }, [measureIndicator]);
+
 
   const submitContact = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
