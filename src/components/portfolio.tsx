@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -118,7 +118,11 @@ export function Portfolio() {
   const [typedName, setTypedName] = useState("");
   const [sent, setSent] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [activeSection, setActiveSection] = useState("top");
+  const navListRef = useRef<HTMLDivElement | null>(null);
+  const linkRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
+  const [indicator, setIndicator] = useState({ left: 0, width: 0, visible: false });
   useSmoothScroll();
 
   useEffect(() => {
@@ -129,11 +133,25 @@ export function Portfolio() {
   }, [typedName]);
 
   useEffect(() => {
-    const updateScrolled = () => setScrolled(window.scrollY > 24);
-    updateScrolled();
-    window.addEventListener("scroll", updateScrolled, { passive: true });
-    return () => window.removeEventListener("scroll", updateScrolled);
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 24);
+      const delta = y - last;
+      if (Math.abs(delta) > 6) {
+        setHidden(y > 320 && delta > 0);
+        last = y;
+      }
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (menuOpen) setHidden(false);
+  }, [menuOpen]);
+
 
   useEffect(() => {
     const revealItems = Array.from(document.querySelectorAll<HTMLElement>(".scroll-reveal"));
@@ -151,20 +169,62 @@ export function Portfolio() {
       { threshold: 0.12, rootMargin: "0px 0px -8%" },
     );
 
+    const visible = new Map<string, number>();
+    const resolveActive = () => {
+      if (window.scrollY < 140) return setActiveSection("top");
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 8) {
+        return setActiveSection("contact");
+      }
+      let best = "";
+      let bestRatio = 0;
+      visible.forEach((ratio, id) => {
+        if (ratio > bestRatio) {
+          bestRatio = ratio;
+          best = id;
+        }
+      });
+      if (best) setActiveSection(best);
+    };
+
     const sectionObserver = new IntersectionObserver(
-      (entries) => entries.forEach((entry) => {
-        if (entry.isIntersecting) setActiveSection(entry.target.id);
-      }),
-      { threshold: 0.2, rootMargin: "-25% 0px -55%" },
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) visible.set(entry.target.id, entry.intersectionRatio);
+          else visible.delete(entry.target.id);
+        });
+        resolveActive();
+      },
+      { threshold: [0, 0.15, 0.35, 0.6, 0.9], rootMargin: "-20% 0px -45%" },
     );
 
     revealItems.forEach((item) => revealObserver.observe(item));
     sectionItems.forEach((item) => sectionObserver.observe(item));
+    window.addEventListener("scroll", resolveActive, { passive: true });
     return () => {
       revealObserver.disconnect();
       sectionObserver.disconnect();
+      window.removeEventListener("scroll", resolveActive);
     };
   }, []);
+
+  const measureIndicator = useCallback(() => {
+    const list = navListRef.current;
+    const link = linkRefs.current[activeSection];
+    if (!list || !link) {
+      setIndicator((prev) => ({ ...prev, visible: false }));
+      return;
+    }
+    const listBox = list.getBoundingClientRect();
+    const linkBox = link.getBoundingClientRect();
+    setIndicator({ left: linkBox.left - listBox.left, width: linkBox.width, visible: true });
+  }, [activeSection, scrolled]);
+
+  useEffect(() => {
+    measureIndicator();
+    window.addEventListener("resize", measureIndicator);
+    return () => window.removeEventListener("resize", measureIndicator);
+  }, [measureIndicator]);
+
 
   const submitContact = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -176,16 +236,29 @@ export function Portfolio() {
   return (
     <div className="portfolio-shell">
       <CustomCursor />
-      <header className={`fixed inset-x-0 top-4 z-50 px-4 transition-transform duration-300 sm:top-6 ${scrolled ? "navbar-scrolled" : ""}`}>
-        <nav className="glass-nav mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center px-3 py-2" aria-label="Primary navigation">
-          <a href="#top" className="flex min-w-0 items-center gap-3 rounded-full pr-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary font-mono text-xs font-bold text-primary-foreground">SN</span>
+      <header className={`navbar-shell fixed inset-x-0 top-4 z-50 px-4 sm:top-6 ${scrolled ? "navbar-scrolled" : ""} ${hidden ? "navbar-hidden" : ""}`}>
+        <nav className="glass-nav nav-inner mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center px-3 py-2" aria-label="Primary navigation">
+          <a href="#top" className="nav-brand flex min-w-0 items-center gap-3 rounded-full pr-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <span className="nav-brand-mark grid size-10 shrink-0 place-items-center rounded-full bg-primary font-mono text-xs font-bold text-primary-foreground">SN</span>
             <span className="truncate text-sm font-semibold">Surya N</span>
           </a>
           <div className="hidden items-center gap-1 md:flex">
-            {navItems.map(([label, id]) => (
-               <a key={id} href={`#${id}`} className={`nav-link ${activeSection === id ? "is-active" : ""}`} aria-current={activeSection === id ? "location" : undefined}>{label}</a>
-            ))}
+            <div ref={navListRef} className="relative flex items-center gap-1">
+              <span
+                aria-hidden="true"
+                className={`nav-indicator ${indicator.visible ? "is-visible" : ""}`}
+                style={{ transform: `translateX(${indicator.left}px)`, width: `${indicator.width}px` }}
+              />
+              {navItems.map(([label, id]) => (
+                <a
+                  key={id}
+                  href={`#${id}`}
+                  ref={(node) => { linkRefs.current[id] = node; }}
+                  className={`nav-link ${activeSection === id ? "is-active" : ""}`}
+                  aria-current={activeSection === id ? "location" : undefined}
+                >{label}</a>
+              ))}
+            </div>
             <Button asChild variant="outline" className="ml-2 h-10 rounded-full border-border bg-secondary/60 px-4 text-xs backdrop-blur-xl">
               <a href="/surya-n-resume.pdf" download><Download /> Resume <span className="font-mono text-[10px] text-muted-foreground">PDF</span></a>
             </Button>
