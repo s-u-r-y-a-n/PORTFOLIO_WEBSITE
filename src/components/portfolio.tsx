@@ -236,16 +236,29 @@ export function Portfolio() {
   return (
     <div className="portfolio-shell">
       <CustomCursor />
-      <header className={`fixed inset-x-0 top-4 z-50 px-4 transition-transform duration-300 sm:top-6 ${scrolled ? "navbar-scrolled" : ""}`}>
-        <nav className="glass-nav mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center px-3 py-2" aria-label="Primary navigation">
-          <a href="#top" className="flex min-w-0 items-center gap-3 rounded-full pr-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary font-mono text-xs font-bold text-primary-foreground">SN</span>
+      <header className={`navbar-shell fixed inset-x-0 top-4 z-50 px-4 sm:top-6 ${scrolled ? "navbar-scrolled" : ""} ${hidden ? "navbar-hidden" : ""}`}>
+        <nav className="glass-nav nav-inner mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center px-3 py-2" aria-label="Primary navigation">
+          <a href="#top" className="nav-brand flex min-w-0 items-center gap-3 rounded-full pr-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <span className="nav-brand-mark grid size-10 shrink-0 place-items-center rounded-full bg-primary font-mono text-xs font-bold text-primary-foreground">SN</span>
             <span className="truncate text-sm font-semibold">Surya N</span>
           </a>
           <div className="hidden items-center gap-1 md:flex">
-            {navItems.map(([label, id]) => (
-               <a key={id} href={`#${id}`} className={`nav-link ${activeSection === id ? "is-active" : ""}`} aria-current={activeSection === id ? "location" : undefined}>{label}</a>
-            ))}
+            <div ref={navListRef} className="relative flex items-center gap-1">
+              <span
+                aria-hidden="true"
+                className={`nav-indicator ${indicator.visible ? "is-visible" : ""}`}
+                style={{ transform: `translateX(${indicator.left}px)`, width: `${indicator.width}px` }}
+              />
+              {navItems.map(([label, id]) => (
+                <a
+                  key={id}
+                  href={`#${id}`}
+                  ref={(node) => { linkRefs.current[id] = node; }}
+                  className={`nav-link ${activeSection === id ? "is-active" : ""}`}
+                  aria-current={activeSection === id ? "location" : undefined}
+                >{label}</a>
+              ))}
+            </div>
             <Button asChild variant="outline" className="ml-2 h-10 rounded-full border-border bg-secondary/60 px-4 text-xs backdrop-blur-xl">
               <a href="/surya-n-resume.pdf" download><Download /> Resume <span className="font-mono text-[10px] text-muted-foreground">PDF</span></a>
             </Button>
