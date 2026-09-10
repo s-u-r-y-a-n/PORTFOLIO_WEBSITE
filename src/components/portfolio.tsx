@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -118,7 +118,11 @@ export function Portfolio() {
   const [typedName, setTypedName] = useState("");
   const [sent, setSent] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [activeSection, setActiveSection] = useState("top");
+  const navListRef = useRef<HTMLDivElement | null>(null);
+  const linkRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
+  const [indicator, setIndicator] = useState({ left: 0, width: 0, visible: false });
   useSmoothScroll();
 
   useEffect(() => {
