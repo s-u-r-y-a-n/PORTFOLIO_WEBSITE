@@ -118,7 +118,6 @@ export function Portfolio() {
   const [typedName, setTypedName] = useState("");
   const [sent, setSent] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [activeSection, setActiveSection] = useState("top");
   const navListRef = useRef<HTMLDivElement | null>(null);
   const linkRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
@@ -133,24 +132,11 @@ export function Portfolio() {
   }, [typedName]);
 
   useEffect(() => {
-    let last = window.scrollY;
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 24);
-      const delta = y - last;
-      if (Math.abs(delta) > 6) {
-        setHidden(y > 320 && delta > 0);
-        last = y;
-      }
-    };
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    if (menuOpen) setHidden(false);
-  }, [menuOpen]);
 
 
   useEffect(() => {
@@ -236,7 +222,7 @@ export function Portfolio() {
   return (
     <div className="portfolio-shell">
       <CustomCursor />
-      <header className={`navbar-shell fixed inset-x-0 top-4 z-50 px-4 sm:top-6 ${scrolled ? "navbar-scrolled" : ""} ${hidden ? "navbar-hidden" : ""}`}>
+      <header className={`navbar-shell fixed inset-x-0 top-4 z-50 px-4 sm:top-6 ${scrolled ? "navbar-scrolled" : ""}`}>
         <nav className="glass-nav nav-inner mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center px-3 py-2" aria-label="Primary navigation">
           <a href="#top" className="nav-brand flex min-w-0 items-center gap-3 rounded-full pr-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <span className="nav-brand-mark grid size-10 shrink-0 place-items-center rounded-full bg-primary font-mono text-xs font-bold text-primary-foreground">SN</span>
@@ -288,9 +274,9 @@ export function Portfolio() {
           <div className="relative mx-auto grid w-full max-w-7xl items-center gap-16 lg:grid-cols-[1.08fr_.92fr]">
             <div className="reveal max-w-3xl">
               <div className="status-chip mb-8"><span className="pulse-dot" />Available for full-stack opportunities</div>
-               <h1 id="hero-title" className="text-[clamp(2.8rem,6.6vw,6.35rem)] font-semibold leading-[.92] tracking-normal">
-                <span className="block min-h-[1em]">{typedName}<span className="type-cursor">|</span></span>
-                <span className="text-gradient mt-3 block">Full Stack<br className="hidden sm:block" /> Developer.</span>
+               <h1 id="hero-title" className="font-semibold leading-[.95] tracking-normal">
+                <span className="block min-h-[1em] text-[clamp(2.35rem,5.4vw,5.25rem)]">{typedName}<span className="type-cursor">|</span></span>
+                <span className="text-gradient mt-3 block text-[clamp(1.8rem,4.15vw,3.9rem)]">Full Stack<br className="hidden sm:block" /> Developer.</span>
               </h1>
               <p className="mt-8 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">I build dependable web applications from interface to infrastructure, with React, Node.js, MongoDB, and modern cloud services.</p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
