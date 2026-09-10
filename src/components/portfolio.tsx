@@ -217,7 +217,7 @@ export function Portfolio() {
     const listBox = list.getBoundingClientRect();
     const linkBox = link.getBoundingClientRect();
     setIndicator({ left: linkBox.left - listBox.left, width: linkBox.width, visible: true });
-  }, [activeSection]);
+  }, [activeSection, scrolled]);
 
   useEffect(() => {
     measureIndicator();
