@@ -184,14 +184,28 @@ export function Portfolio() {
       { threshold: [0, 0.15, 0.35, 0.6, 0.9], rootMargin: "-20% 0px -45%" },
     );
 
+    // safety net: reveal anything already inside the viewport (e.g. the footer at page bottom)
+    const revealNearBottom = () => {
+      revealItems.forEach((item) => {
+        if (item.classList.contains("is-visible")) return;
+        if (item.getBoundingClientRect().top < window.innerHeight - 24) {
+          item.classList.add("is-visible");
+          revealObserver.unobserve(item);
+        }
+      });
+    };
+
     revealItems.forEach((item) => revealObserver.observe(item));
     sectionItems.forEach((item) => sectionObserver.observe(item));
     window.addEventListener("scroll", resolveActive, { passive: true });
+    window.addEventListener("scroll", revealNearBottom, { passive: true });
     return () => {
       revealObserver.disconnect();
       sectionObserver.disconnect();
       window.removeEventListener("scroll", resolveActive);
+      window.removeEventListener("scroll", revealNearBottom);
     };
+
   }, []);
 
   const measureIndicator = useCallback(() => {
