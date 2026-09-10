@@ -9,10 +9,15 @@ import {
   Linkedin,
   Mail,
   Menu,
+  Moon,
   Send,
+  Sun,
   X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { CustomCursor } from "@/components/custom-cursor";
+import { useSmoothScroll, smoothScrollToId } from "@/hooks/use-smooth-scroll";
+import { useTheme } from "@/hooks/use-theme";
 import financeImage from "@/assets/project-finance.jpg";
 import admissionsImage from "@/assets/project-admissions.jpg";
 import commerceImage from "@/assets/project-commerce.jpg";
