@@ -93,7 +93,24 @@ const projects = [
 ];
 
 function scrollTo(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  smoothScrollToId(id);
+}
+
+function ThemeToggle({ className = "" }: { className?: string }) {
+  const { theme, toggle } = useTheme();
+  return (
+    <button
+      type="button"
+      onClick={toggle}
+      className={`theme-toggle ${theme === "light" ? "is-light" : ""} ${className}`}
+      aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+      aria-pressed={theme === "light"}
+      title={theme === "dark" ? "Light mode" : "Dark mode"}
+    >
+      <Moon className="theme-icon theme-icon-moon size-4" aria-hidden="true" />
+      <Sun className="theme-icon theme-icon-sun size-4" aria-hidden="true" />
+    </button>
+  );
 }
 
 export function Portfolio() {
@@ -102,6 +119,7 @@ export function Portfolio() {
   const [sent, setSent] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("top");
+  useSmoothScroll();
 
   useEffect(() => {
     const text = "Hi, I'm Surya N.";
