@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -95,6 +95,8 @@ export function Portfolio() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [typedName, setTypedName] = useState("");
   const [sent, setSent] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState("top");
 
   useEffect(() => {
     const text = "Hi, I'm Surya N.";
@@ -102,6 +104,44 @@ export function Portfolio() {
     const timer = window.setTimeout(() => setTypedName(text.slice(0, typedName.length + 1)), 72);
     return () => window.clearTimeout(timer);
   }, [typedName]);
+
+  useEffect(() => {
+    const updateScrolled = () => setScrolled(window.scrollY > 24);
+    updateScrolled();
+    window.addEventListener("scroll", updateScrolled, { passive: true });
+    return () => window.removeEventListener("scroll", updateScrolled);
+  }, []);
+
+  useEffect(() => {
+    const revealItems = Array.from(document.querySelectorAll<HTMLElement>(".scroll-reveal"));
+    const sectionItems = ["about", "skills", "work", "experience", "contact"]
+      .map((id) => document.getElementById(id))
+      .filter((item): item is HTMLElement => Boolean(item));
+
+    const revealObserver = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+        }
+      }),
+      { threshold: 0.12, rootMargin: "0px 0px -8%" },
+    );
+
+    const sectionObserver = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => {
+        if (entry.isIntersecting) setActiveSection(entry.target.id);
+      }),
+      { threshold: 0.2, rootMargin: "-25% 0px -55%" },
+    );
+
+    revealItems.forEach((item) => revealObserver.observe(item));
+    sectionItems.forEach((item) => sectionObserver.observe(item));
+    return () => {
+      revealObserver.disconnect();
+      sectionObserver.disconnect();
+    };
+  }, []);
 
   const submitContact = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -112,7 +152,7 @@ export function Portfolio() {
 
   return (
     <div className="portfolio-shell">
-      <header className="fixed inset-x-0 top-4 z-50 px-4 sm:top-6">
+      <header className={`fixed inset-x-0 top-4 z-50 px-4 transition-transform duration-300 sm:top-6 ${scrolled ? "navbar-scrolled" : ""}`}>
         <nav className="glass-nav mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)_auto] items-center px-3 py-2" aria-label="Primary navigation">
           <a href="#top" className="flex min-w-0 items-center gap-3 rounded-full pr-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary font-mono text-xs font-bold text-primary-foreground">SN</span>
@@ -120,23 +160,24 @@ export function Portfolio() {
           </a>
           <div className="hidden items-center gap-1 md:flex">
             {navItems.map(([label, id]) => (
-              <a key={id} href={`#${id}`} className="nav-link">{label}</a>
+               <a key={id} href={`#${id}`} className={`nav-link ${activeSection === id ? "is-active" : ""}`} aria-current={activeSection === id ? "location" : undefined}>{label}</a>
             ))}
             <Button asChild variant="outline" className="ml-2 h-10 rounded-full border-border bg-secondary/60 px-4 text-xs backdrop-blur-xl">
               <a href="/surya-n-resume.pdf" download><Download /> Resume <span className="font-mono text-[10px] text-muted-foreground">PDF</span></a>
             </Button>
           </div>
-          <Button variant="ghost" size="icon" className="rounded-full md:hidden" aria-label={menuOpen ? "Close menu" : "Open menu"} onClick={() => setMenuOpen((open) => !open)}>
-            {menuOpen ? <X /> : <Menu />}
+          <Button variant="ghost" size="icon" className={`menu-toggle relative rounded-full md:hidden ${menuOpen ? "is-open" : ""}`} aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>
+            <Menu className="menu-icon menu-icon-open" />
+            <X className="menu-icon menu-icon-close" />
           </Button>
-          {menuOpen && (
-            <div className="col-span-2 grid gap-1 border-t border-border/60 px-1 pt-3 pb-1 md:hidden">
+          <div className={`mobile-menu col-span-2 grid gap-1 md:hidden ${menuOpen ? "is-open" : ""}`} aria-hidden={!menuOpen}>
+            <div className="grid gap-1 border-t border-border/60 px-1 pt-3 pb-1">
               {navItems.map(([label, id]) => (
-                <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-3 text-sm text-muted-foreground hover:bg-accent hover:text-foreground">{label}</a>
+                <a key={id} href={`#${id}`} onClick={() => setMenuOpen(false)} className={`mobile-nav-link rounded-lg px-3 py-3 text-sm text-muted-foreground hover:bg-accent hover:text-foreground ${activeSection === id ? "is-active" : ""}`} aria-current={activeSection === id ? "location" : undefined}>{label}</a>
               ))}
               <a href="/surya-n-resume.pdf" download className="mt-1 flex items-center justify-between rounded-lg bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground">Resume (PDF)<Download className="size-4" /></a>
             </div>
-          )}
+          </div>
         </nav>
       </header>
 
@@ -146,7 +187,7 @@ export function Portfolio() {
           <div className="relative mx-auto grid w-full max-w-7xl items-center gap-16 lg:grid-cols-[1.08fr_.92fr]">
             <div className="reveal max-w-3xl">
               <div className="status-chip mb-8"><span className="pulse-dot" />Available for full-stack opportunities</div>
-              <h1 id="hero-title" className="text-[clamp(3.2rem,8vw,7.5rem)] font-semibold leading-[.89] tracking-normal">
+               <h1 id="hero-title" className="text-[clamp(2.8rem,6.6vw,6.35rem)] font-semibold leading-[.92] tracking-normal">
                 <span className="block min-h-[1em]">{typedName}<span className="type-cursor">|</span></span>
                 <span className="text-gradient mt-3 block">Full Stack<br className="hidden sm:block" /> Developer.</span>
               </h1>
@@ -168,12 +209,12 @@ export function Portfolio() {
           <div className="absolute bottom-7 left-1/2 hidden -translate-x-1/2 items-center gap-2 font-mono text-[10px] tracking-[.18em] text-muted-foreground uppercase lg:flex">Scroll to explore <ChevronDown className="size-3" /></div>
         </section>
 
-        <section id="about" className="section-wrap border-t border-border/50" aria-labelledby="about-title">
+        <section id="about" className="section-wrap scroll-reveal border-t border-border/50" aria-labelledby="about-title">
           <SectionLabel number="01" label="About" />
           <div className="grid gap-10 lg:grid-cols-2 lg:gap-24">
             <h2 id="about-title" className="section-title">Building products with clarity and intent.</h2>
-            <div className="space-y-6 text-base leading-8 text-muted-foreground">
-              <p className="text-xl leading-8 text-foreground">With 1.5+ years in professional engineering, I turn product intent into reliable software that people can trust.</p>
+             <div className="space-y-6 text-base leading-8 text-muted-foreground">
+               <p className="text-lg leading-8 text-foreground">With 1.5+ years in professional engineering, I turn product intent into reliable software that people can trust.</p>
               <p>My approach connects thoughtful interfaces to resilient APIs, deliberate database schemas, and cloud architecture that is easy to operate. The result is less friction for users—and fewer surprises for teams.</p>
             </div>
           </div>
@@ -184,14 +225,14 @@ export function Portfolio() {
           </div>
         </section>
 
-        <section id="skills" className="section-wrap" aria-labelledby="skills-title">
+        <section id="skills" className="section-wrap scroll-reveal" aria-labelledby="skills-title">
           <SectionLabel number="02" label="Capabilities" />
           <h2 id="skills-title" className="section-title max-w-3xl">The stack behind the work.</h2>
           <div className="mt-14 grid gap-4 lg:grid-cols-3">
             {skillGroups.map((group) => (
-              <article key={group.number} className="glass-card flex min-h-[29rem] flex-col p-6 sm:p-8">
+               <article key={group.number} className="glass-card reveal-child flex min-h-[29rem] flex-col p-6 sm:p-8">
                 <span className="font-mono text-xs text-accent-amber">/{group.number}</span>
-                <h3 className="mt-12 text-2xl font-semibold">{group.title}</h3>
+                 <h3 className="mt-12 text-xl font-semibold sm:text-[1.35rem]">{group.title}</h3>
                 <p className="mt-4 text-sm leading-6 text-muted-foreground">{group.copy}</p>
                 <div className="mt-auto flex flex-wrap gap-2 pt-9">
                   {group.skills.map((skill) => <span key={skill} className={group.primary.includes(skill) ? "skill-pill skill-pill-primary" : "skill-pill"}>{skill}</span>)}
@@ -201,7 +242,7 @@ export function Portfolio() {
           </div>
         </section>
 
-        <section className="section-wrap grid gap-14 lg:grid-cols-[.78fr_1.22fr] lg:gap-24" aria-labelledby="architecture-title">
+        <section className="section-wrap scroll-reveal grid gap-14 lg:grid-cols-[.78fr_1.22fr] lg:gap-24" aria-labelledby="architecture-title">
           <div className="lg:sticky lg:top-32 lg:self-start">
             <SectionLabel number="03" label="Backend thinking" />
             <h2 id="architecture-title" className="section-title">More than a pretty frontend.</h2>
@@ -209,7 +250,7 @@ export function Portfolio() {
           </div>
           <ol className="space-y-3">
             {architecture.map(([title, description], index) => (
-              <li key={title} className="relative">
+               <li key={title} className="reveal-child relative">
                 <div className="architecture-slab grid grid-cols-[auto_minmax(0,1fr)] items-center gap-5 p-5 sm:p-6">
                   <span className="font-mono text-xs text-primary">{String(index + 1).padStart(2, "0")}</span>
                   <div className="min-w-0"><h3 className="text-base font-semibold">{title}</h3><p className="mt-1 text-sm text-muted-foreground">{description}</p></div>
@@ -220,7 +261,7 @@ export function Portfolio() {
           </ol>
         </section>
 
-        <section id="work" className="section-wrap" aria-labelledby="work-title">
+        <section id="work" className="section-wrap scroll-reveal" aria-labelledby="work-title">
           <SectionLabel number="04" label="Selected work" />
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <h2 id="work-title" className="section-title max-w-2xl">Products built for real-world complexity.</h2>
@@ -231,7 +272,7 @@ export function Portfolio() {
           </div>
         </section>
 
-        <section id="experience" className="section-wrap" aria-labelledby="experience-title">
+        <section id="experience" className="section-wrap scroll-reveal" aria-labelledby="experience-title">
           <SectionLabel number="05" label="Experience" />
           <h2 id="experience-title" className="section-title">Shipping across the stack.</h2>
           <article className="glass-card mt-14 grid gap-10 p-6 sm:p-10 lg:grid-cols-[.35fr_.65fr]">
@@ -241,7 +282,7 @@ export function Portfolio() {
             </div>
             <div>
               <p className="font-mono text-xs text-primary">FULL STACK DEVELOPER</p>
-              <h3 className="mt-3 text-2xl font-semibold sm:text-3xl">Professional Engineering Experience</h3>
+               <h3 className="mt-3 text-xl font-semibold sm:text-2xl">Professional Engineering Experience</h3>
               <ul className="mt-8 grid gap-5 text-sm leading-7 text-muted-foreground">
                 <li className="experience-item">Delivered end-to-end product features across React interfaces, Node.js APIs, data models, and cloud deployments.</li>
                 <li className="experience-item">Improved backend response paths through query optimization, predictable contracts, and robust async workflows.</li>
@@ -251,7 +292,7 @@ export function Portfolio() {
           </article>
         </section>
 
-        <section id="contact" className="section-wrap pb-12" aria-labelledby="contact-title">
+        <section id="contact" className="section-wrap scroll-reveal pb-12" aria-labelledby="contact-title">
           <div className="contact-panel grid gap-14 p-6 sm:p-10 lg:grid-cols-[.8fr_1.2fr] lg:p-14">
             <div>
               <SectionLabel number="06" label="Contact" />
@@ -302,20 +343,20 @@ function Metric({ value, label }: { value: string; label: string }) {
   return <article className="glass-card p-6 sm:p-7"><p className="text-2xl font-semibold text-primary">{value}</p><p className="mt-3 text-sm text-muted-foreground">{label}</p></article>;
 }
 
-function SocialLink({ icon, label, href }: { icon: React.ReactNode; label: string; href: string }) {
+function SocialLink({ icon, label, href }: { icon: ReactNode; label: string; href: string }) {
   return <a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel="noreferrer" className="social-pill group">{icon}<span>{label}</span><ArrowUpRight className="size-3 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" /></a>;
 }
 
 function ProjectCard({ project, reversed }: { project: (typeof projects)[number]; reversed: boolean }) {
   return (
-    <article className="project-card grid overflow-hidden lg:grid-cols-2">
+    <article className="project-card reveal-child grid overflow-hidden lg:grid-cols-2">
       <div className={`group relative min-h-72 overflow-hidden lg:min-h-[32rem] ${reversed ? "lg:order-2" : ""}`}>
         <img src={project.image} alt={`${project.title} interface preview`} loading="lazy" width={1280} height={800} className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.035]" />
         <span className="absolute top-5 left-5 rounded-full border border-border bg-background/80 px-3 py-1.5 font-mono text-[10px] backdrop-blur-xl">PROJECT {project.number}</span>
       </div>
       <div className="flex flex-col p-6 sm:p-9 lg:p-11">
         <p className="font-mono text-[10px] tracking-[.16em] text-primary">{project.type}</p>
-        <h3 className="mt-5 text-3xl font-semibold leading-tight">{project.title}</h3>
+         <h3 className="mt-5 text-2xl font-semibold leading-tight sm:text-[1.75rem]">{project.title}</h3>
         <p className="mt-5 text-sm leading-7 text-muted-foreground">{project.description}</p>
         <ul className="mt-7 space-y-3 text-sm">{project.highlights.map((item) => <li key={item} className="flex gap-3"><span className="text-primary">↳</span>{item}</li>)}</ul>
         <div className="mt-7 flex flex-wrap gap-2">{project.stack.map((item) => <span key={item} className="tech-chip">{item}</span>)}</div>
