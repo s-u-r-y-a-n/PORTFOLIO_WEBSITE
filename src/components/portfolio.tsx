@@ -131,11 +131,26 @@ const experiences = [
 ];
 
 const architecture = [
-  ["React Application", "Interfaces & State"],
-  ["API Gateway & Router", "REST, GraphQL, DTO Validation"],
-  ["Security & Guardrails", "JWT, RBAC, Middleware"],
-  ["Node.js Core Services", "Express, Async Logic, WebSockets"],
-  ["Data & Cloud Infrastructure", "MongoDB, AWS, Serverless, S3"],
+  [
+    "Client Request & State",
+    "Predictable state handling, form validation, and typed API communication.",
+  ],
+  [
+    "API Layer & Routing",
+    "REST and GraphQL endpoints handling request dispatching and payload parsing.",
+  ],
+  [
+    "Auth & Security Guardrails",
+    "Stateless JWT validation, role-based access control (RBAC), and route middleware.",
+  ],
+  [
+    "Core Business Logic",
+    "Asynchronous service execution, event-driven workflows, and real-time WebSockets & Webhooks.",
+  ],
+  [
+    "Data & Cloud Infrastructure",
+    "Structured storage via MySQL, MongoDB, or DynamoDB, backed by AWS serverless services and CloudWatch monitoring.",
+  ],
 ] as const;
 
 const projects = [
@@ -329,6 +344,7 @@ export function Portfolio() {
         >
           <a
             href="#top"
+
             className="nav-brand flex min-w-0 items-center gap-3 rounded-full pr-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <span className="nav-brand-mark grid size-10 shrink-0 place-items-center rounded-full bg-primary font-mono text-xs font-bold text-primary-foreground">
@@ -568,8 +584,9 @@ export function Portfolio() {
               More than a pretty frontend.
             </h2>
             <p className="mt-6 max-w-lg text-base leading-7 text-muted-foreground">
-              I engineer the full request lifecycle—from a user's first interaction to the final
-              data write—with security, observability, and graceful failure in mind.
+              I engineer the full request lifecycle—from the user's action on the client to
+              structured persistence and cloud observability—keeping security, clean data flow, and
+              error handling in focus..
             </p>
           </div>
           <ol className="space-y-3">
@@ -622,7 +639,7 @@ export function Portfolio() {
           </div>
         </section>
 
-        <section
+        {/* <section
           id="experience"
           className="section-wrap scroll-reveal reveal-plain"
           aria-labelledby="experience-title"
@@ -662,8 +679,8 @@ export function Portfolio() {
               </ul>
             </div>
           </article>
-        </section>
-        {/* <section
+        </section> */}
+        <section
           id="experience"
           className="section-wrap scroll-reveal reveal-plain"
           aria-labelledby="experience-title"
@@ -721,7 +738,7 @@ export function Portfolio() {
               </article>
             ))}
           </div>
-        </section> */}
+        </section>
 
         <section
           id="contact"
@@ -893,7 +910,7 @@ function TypedName() {
 
 function SectionLabel({ number, label }: { number: string; label: string }) {
   return (
-    <div className="mb-7 flex items-center gap-3 font-mono text-[11px] tracking-[.16em] uppercase">
+    <div className="mb-7 flex items-center gap-3 font-mono text-[14px] tracking-[.16em] uppercase">
       <span className="text-primary">{number}</span>
       <span className="h-px w-8 bg-border" />
       <span className="text-muted-foreground">{label}</span>
