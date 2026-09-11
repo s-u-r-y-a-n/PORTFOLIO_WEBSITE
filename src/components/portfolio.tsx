@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -29,6 +37,11 @@ const navItems = [
   ["Experience", "experience"],
   ["Contact", "contact"],
 ] as const;
+
+// The portfolio is server-rendered, so use a layout effect only in the
+// browser. This makes viewport observers available in the same initial commit
+// as the root smooth-scroll handler without producing an SSR warning.
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 const skillGroups = [
   {
@@ -121,7 +134,7 @@ export function Portfolio() {
   const navListRef = useRef<HTMLDivElement | null>(null);
   const linkRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const [indicator, setIndicator] = useState({ left: 0, width: 0, visible: false });
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -129,7 +142,7 @@ export function Portfolio() {
   }, []);
 
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const revealItems = Array.from(document.querySelectorAll<HTMLElement>(".scroll-reveal"));
     const sectionItems = ["about", "skills", "work", "experience", "contact"]
       .map((id) => document.getElementById(id))

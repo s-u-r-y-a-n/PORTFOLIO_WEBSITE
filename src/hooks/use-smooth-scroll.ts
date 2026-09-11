@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 
 const EASE_FACTOR = 0.062; // lower = slower, more gliding
 const WHEEL_MULTIPLIER = 0.62; // <1 reduces perceived scroll speed
@@ -9,6 +9,12 @@ type ScrollController = {
 };
 
 let activeController: ScrollController | null = null;
+
+// Register input handlers before the browser paints the hydrated page. This
+// keeps the first wheel interaction from escaping to native scrolling while
+// the rest of the portfolio is mounting. `useEffect` remains the SSR-safe
+// fallback because this module also renders on the server.
+const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 function easeInOutCubic(t: number) {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -24,17 +30,21 @@ function jump(top: number) {
 
 /**
  * Damped wheel scrolling + eased anchor navigation.
- * Desktop pointer devices only; native touch scrolling is untouched.
+ * Wheel/trackpad input is damped while native touch scrolling is untouched.
  */
 export function useSmoothScroll() {
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+    // The root shell has already disabled browser restoration before
+    // hydration. Reassert the portfolio's defined initial position here so
+    // the wheel controller and the page always share a zero-scroll baseline.
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
 
     let wheelRaf = 0;
     let anchorRaf = 0;
-    let target = window.scrollY;
-    let current = window.scrollY;
+    let target = 0;
+    let current = 0;
     let gliding = false;
     let anchorGliding = false;
 
@@ -64,8 +74,18 @@ export function useSmoothScroll() {
     const onWheel = (event: WheelEvent) => {
       if (event.ctrlKey || event.defaultPrevented) return;
       const path = event.composedPath() as HTMLElement[];
-      // let inner scrollable areas (code block, textarea) behave natively
-      if (path.some((node) => node?.scrollHeight > node?.clientHeight + 4 && node !== document.body && node !== document.documentElement && getComputedStyle(node).overflowY !== "visible")) return;
+      // Let actual nested scroll containers (such as a textarea) keep native
+      // scrolling. `overflow: clip` and `hidden` are not scroll containers:
+      // the portfolio shell uses `clip`, and treating it as one caused every
+      // initial wheel event inside the page to bypass this smoother.
+      const hasNestedScroller = path.some((node) => {
+        if (!(node instanceof HTMLElement) || node === document.body || node === document.documentElement) {
+          return false;
+        }
+        const overflowY = getComputedStyle(node).overflowY;
+        return (overflowY === "auto" || overflowY === "scroll") && node.scrollHeight > node.clientHeight + 4;
+      });
+      if (hasNestedScroller) return;
 
       event.preventDefault();
       if (anchorGliding) stopAnimations();
@@ -77,6 +97,13 @@ export function useSmoothScroll() {
         gliding = true;
         wheelRaf = requestAnimationFrame(loop);
       }
+    };
+
+    // Keep the smoother's baseline aligned with keyboard, scrollbar, browser
+    // history, and any scroll that occurred before hydration. We deliberately
+    // do not overwrite it while the wheel animation owns the scroll position.
+    const onScroll = () => {
+      if (!gliding && !anchorGliding) target = current = window.scrollY;
     };
 
     const animateTo = (top: number) => {
@@ -125,13 +152,18 @@ export function useSmoothScroll() {
     if (!reduced) {
       document.documentElement.style.scrollBehavior = "auto";
       document.addEventListener("click", onClick);
-      if (fine) window.addEventListener("wheel", onWheel, { passive: false });
+      // Do not gate this behind `(pointer: fine)`: hybrid laptops commonly
+      // report a coarse primary pointer even when a mouse/trackpad emits wheel
+      // events. That gate made initial scrolling fall back to native behavior.
+      window.addEventListener("wheel", onWheel, { passive: false });
+      window.addEventListener("scroll", onScroll, { passive: true });
     }
 
     return () => {
       if (activeController?.scrollToId === scrollToId) activeController = null;
       document.removeEventListener("click", onClick);
       window.removeEventListener("wheel", onWheel);
+      window.removeEventListener("scroll", onScroll);
       stopAnimations();
       document.documentElement.style.scrollBehavior = "";
     };

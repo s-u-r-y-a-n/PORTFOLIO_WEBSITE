@@ -113,7 +113,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <HeadContent />
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{if(localStorage.getItem('portfolio-theme')==='light'){document.documentElement.classList.add('light');document.documentElement.style.colorScheme='light';}}catch(e){}`,
+            __html: `try{history.scrollRestoration='manual';window.scrollTo(0,0);if(localStorage.getItem('portfolio-theme')==='light'){document.documentElement.classList.add('light');document.documentElement.style.colorScheme='light';}}catch(e){}`,
           }}
         />
       </head>

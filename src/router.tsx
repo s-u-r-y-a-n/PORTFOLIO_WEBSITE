@@ -8,7 +8,9 @@ export const getRouter = () => {
   const router = createRouter({
     routeTree,
     context: { queryClient },
-    scrollRestoration: true,
+    // This is a single-page portfolio. Restoring a previously saved position
+    // fights the custom scroll controller and makes a refresh start mid-page.
+    scrollRestoration: false,
     defaultPreloadStaleTime: 0,
   });
 
