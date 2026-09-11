@@ -24,6 +24,7 @@ import { useTheme } from "@/hooks/use-theme";
 import financeImage from "@/assets/project-finance.jpg";
 import admissionsImage from "@/assets/project-admissions.jpg";
 import commerceImage from "@/assets/project-commerce.jpg";
+import skillGroups from "../data/skills.js";
 
 const navItems = [
   ["About", "about"],
@@ -32,63 +33,6 @@ const navItems = [
   ["Experience", "experience"],
   ["Contact", "contact"],
 ] as const;
-
-const skillGroups = [
-  {
-    number: "01",
-    title: "Frontend Architecture",
-    copy: "Building responsive, accessible interfaces focused on clean component structure, predictable state management, and intuitive user interactions.",
-    skills: [
-      "React",
-      "Redux Toolkit",
-      "TypeScript",
-      "Tailwind CSS",
-      "Bootstrap",
-      "HTML",
-      "CSS",
-      "Prime React",
-      "Material UI",
-    ],
-    primary: [],
-  },
-  {
-    number: "02",
-    title: "Backend & APIs",
-    copy: "Designing secure service layers, RESTful endpoints, and real-time communication channels centered around strict data validation and role-based access.",
-    skills: [
-      "Node.js",
-      "Express.js",
-      "REST APIs",
-      "GraphQL",
-      "WebSockets",
-      "Webhooks",
-      "JWT Authentication",
-      "Role-Based Access Control (RBAC)",
-    ],
-    primary: [],
-  },
-  {
-    number: "03",
-    title: "Database & Cloud",
-    copy: "Structuring data persistence across relational and document stores, alongside serverless deployments and cloud log monitoring.",
-    skills: [
-      "MySQL",
-      "Sequelize",
-      "MongoDB",
-      "Mongoose",
-      "DynamoDB",
-      "AWS Lambda",
-      "AWS SAM",
-      "Amazon S3",
-      "Amazon SES",
-      "AWS CloudWatch",
-      "Git",
-      "GitHub",
-      "Postman",
-    ],
-    primary: [],
-  },
-];
 
 const experiences = [
   {
@@ -100,11 +44,24 @@ const experiences = [
     description:
       "Contributed to an enterprise-scale Pharmacy Logistics platform built on microservices, focusing on QA bug resolution, typed state flows, and cloud monitoring.",
     highlights: [
-      "Resolved QA-reported issues across backend microservices to support production stability.",
-      "Worked with TypeScript, Redux, and GraphQL for type-safe state management and targeted data fetching.",
-      "Used AWS CloudWatch daily to inspect distributed service logs, trace runtime errors, and assist cross-service debugging.",
+      "Resolved high-priority QA bugs and implemented feature improvements across multiple backend microservices within an enterprise-scale Pharmacy Logistics system. ",
+      "Worked with Redux for centralized client-side state management and integrated GraphQL APIs for efficient, targeted data fetching across complex logistical workflows. ",
+      "Leveraged AWS CloudWatch on a daily basis to monitor distributed service logs, trace runtime errors, and streamline debugging across serverless environments.",
     ],
-    stack: ["TypeScript", "React", "Redux", "Material UI", "Node.js", "GraphQL", "AWS CloudWatch"],
+    stack: [
+      "React",
+      "Redux",
+      "TypeScript",
+      "Material UI",
+      "Node.js",
+      "REST APIs",
+      "GraphQL",
+      "Webhooks",
+      "AWS CloudWatch",
+      "AWS Lambda",
+      "DynamoDB",
+      "PostgreSQL",
+    ],
   },
   {
     role: "Full Stack Engineer",
@@ -125,12 +82,15 @@ const experiences = [
       "PrimeReact",
       "Node.js",
       "Express",
+      "REST APIs",
+      "WebSockets",
+      "AWS SES",
+      "AWS S3",
+      "AWS Lambda",
+      "AWS SAM",
+      "DynamoDB",
       "MySQL",
       "MongoDB",
-      "AWS Lambda",
-      "DynamoDB",
-      "AWS SAM",
-      "WebSockets",
     ],
   },
 ];
@@ -498,11 +458,15 @@ export function Portfolio() {
           <div className="absolute bottom-7 left-1/2 hidden -translate-x-1/2 items-center gap-2 font-mono text-[10px] tracking-[.18em] text-muted-foreground uppercase lg:flex">
             Scroll to explore <ChevronDown className="size-3" />
           </div>
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 bottom-0 mx-auto w-[calc(100%-2.5rem)] max-w-7xl border-b border-border/40 sm:w-[calc(100%-4rem)] lg:w-[calc(100%-6rem)]"
+          />
         </section>
 
         <section
           id="about"
-          className="section-wrap scroll-reveal reveal-plain border-t border-border/50"
+          className="section-wrap scroll-reveal reveal-plain border-t border-b border-border/40"
           aria-labelledby="about-title"
         >
           <div className="reveal-up">
@@ -541,7 +505,7 @@ export function Portfolio() {
 
         <section
           id="skills"
-          className="section-wrap scroll-reveal reveal-plain"
+          className="section-wrap scroll-reveal reveal-plain border-b border-border/40"
           aria-labelledby="skills-title"
         >
           <div className="reveal-up">
@@ -580,7 +544,7 @@ export function Portfolio() {
         </section>
 
         <section
-          className="section-wrap scroll-reveal reveal-plain grid gap-14 lg:grid-cols-[.78fr_1.22fr] lg:gap-24"
+          className="section-wrap scroll-reveal reveal-plain grid gap-14 border-b border-border/40 lg:grid-cols-[.78fr_1.22fr] lg:gap-24"
           aria-labelledby="architecture-title"
         >
           <div className="reveal-x-left lg:sticky lg:top-32 lg:self-start">
@@ -619,7 +583,7 @@ export function Portfolio() {
 
         <section
           id="work"
-          className="section-wrap scroll-reveal reveal-plain"
+          className="section-wrap scroll-reveal reveal-plain border-b border-border/40"
           aria-labelledby="work-title"
         >
           <div className="reveal-up">
@@ -646,7 +610,7 @@ export function Portfolio() {
 
         <section
           id="experience"
-          className="section-wrap scroll-reveal reveal-plain"
+          className="section-wrap scroll-reveal reveal-plain border-b border-border/40"
           aria-labelledby="experience-title"
         >
           <div className="reveal-up">
@@ -697,7 +661,7 @@ export function Portfolio() {
                       {exp.description}
                     </p>
                     <div className="mt-9">
-                      <h4 className="font-mono text-[11px] font-semibold tracking-[.14em] text-muted-foreground uppercase">
+                      <h4 className="font-mono text-[13px] font-semibold tracking-[.14em] text-muted-foreground uppercase">
                         Key contributions
                       </h4>
                       <ul className="mt-5 grid gap-4 text-sm leading-7 text-muted-foreground">
@@ -729,7 +693,7 @@ export function Portfolio() {
 
         <section
           id="contact"
-          className="section-wrap scroll-reveal reveal-plain pb-12"
+          className="section-wrap scroll-reveal reveal-plain border-b border-border/40 pb-12"
           aria-labelledby="contact-title"
         >
           <div className="contact-panel grid gap-14 p-6 sm:p-10 lg:grid-cols-[.8fr_1.2fr] lg:p-14">

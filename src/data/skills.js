@@ -1,0 +1,58 @@
+const skillGroups = [
+  {
+    number: "01",
+    title: "Frontend Architecture",
+    copy: "Building responsive, accessible interfaces focused on clean component structure, predictable state management, and intuitive user interactions.",
+    skills: [
+      "React",
+      "Redux Toolkit",
+      "TypeScript",
+      "Tailwind CSS",
+      "Bootstrap",
+      "HTML",
+      "CSS",
+      "Prime React",
+      "Material UI",
+    ],
+    primary: [],
+  },
+  {
+    number: "02",
+    title: "Backend & APIs",
+    copy: "Designing secure service layers, RESTful endpoints, and real-time communication channels centered around strict data validation and role-based access.",
+    skills: [
+      "Node.js",
+      "Express.js",
+      "REST APIs",
+      "GraphQL",
+      "WebSockets",
+      "Webhooks",
+      "JWT Authentication",
+      "Role-Based Access Control (RBAC)",
+    ],
+    primary: [],
+  },
+  {
+    number: "03",
+    title: "Database & Cloud",
+    copy: "Structuring data persistence across relational and document stores, alongside serverless deployments and cloud log monitoring.",
+    skills: [
+      "MySQL",
+      "Sequelize",
+      "MongoDB",
+      "Mongoose",
+      "DynamoDB",
+      "AWS Lambda",
+      "AWS SAM",
+      "Amazon S3",
+      "Amazon SES",
+      "AWS CloudWatch",
+      "Git",
+      "GitHub",
+      "Postman",
+    ],
+    primary: [],
+  },
+];
+
+export default skillGroups;
