@@ -496,6 +496,59 @@ html.light .skill-pill-primary {
   border-radius: 99px;
   background: var(--primary);
 }
+.experience-timeline {
+  position: relative;
+  display: grid;
+  gap: 2rem;
+  padding-left: 3.25rem;
+}
+.experience-timeline::before {
+  content: "";
+  position: absolute;
+  top: 2.35rem;
+  bottom: 2.35rem;
+  left: .62rem;
+  width: 1px;
+  background: color-mix(in oklab, var(--primary) 42%, var(--border));
+}
+.experience-entry { position: relative; }
+.experience-timeline-node {
+  position: absolute;
+  top: 2.25rem;
+  left: -2.94rem;
+  z-index: 1;
+  width: 1rem;
+  height: 1rem;
+  border: 3px solid var(--background);
+  border-radius: 999px;
+  background: var(--primary);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--primary) 55%, transparent), 0 0 0 6px color-mix(in oklab, var(--primary) 10%, transparent);
+  opacity: 0;
+  transform: scale(.55);
+  transition: opacity 420ms ease, transform 520ms cubic-bezier(.2,.8,.2,1);
+}
+.experience-card {
+  opacity: 0;
+  transform: translateY(24px) scale(.98);
+  transition: opacity 680ms cubic-bezier(.2,.8,.2,1), transform 680ms cubic-bezier(.2,.8,.2,1);
+}
+.experience-entry.is-visible .experience-timeline-node { opacity: 1; transform: scale(1); }
+.experience-entry.is-visible .experience-card { opacity: 1; transform: none; transition-delay: 70ms; }
+.experience-card-header, .experience-description { opacity: 0; transform: translateY(12px); transition: opacity 500ms ease, transform 500ms cubic-bezier(.2,.8,.2,1); }
+.experience-entry.is-visible .experience-card-header, .experience-entry.is-visible .experience-description { opacity: 1; transform: none; transition-delay: 160ms; }
+.experience-entry .timeline-item { opacity: 0; transform: translateX(-18px); }
+.experience-entry.is-visible .timeline-item { opacity: 1; transform: none; }
+.experience-entry.is-visible .timeline-item:nth-child(1) { transition-delay: 230ms; }
+.experience-entry.is-visible .timeline-item:nth-child(2) { transition-delay: 300ms; }
+.experience-entry.is-visible .timeline-item:nth-child(3) { transition-delay: 370ms; }
+.experience-entry.is-visible .timeline-item:nth-child(4) { transition-delay: 440ms; }
+.experience-stack > * { opacity: 0; transform: translateY(8px) scale(.94); transition: opacity 380ms ease, transform 380ms cubic-bezier(.2,.8,.2,1); }
+.experience-entry.is-visible .experience-stack > * { opacity: 1; transform: none; transition-delay: 300ms; }
+.experience-entry.is-visible .experience-stack > :nth-child(2) { transition-delay: 350ms; }
+.experience-entry.is-visible .experience-stack > :nth-child(3) { transition-delay: 400ms; }
+.experience-entry.is-visible .experience-stack > :nth-child(4) { transition-delay: 450ms; }
+.experience-entry.is-visible .experience-stack > :nth-child(5) { transition-delay: 500ms; }
+.experience-entry.is-visible .experience-stack > :nth-child(6) { transition-delay: 550ms; }
 .contact-panel {
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
@@ -806,6 +859,12 @@ html.light .skill-pill-primary {
   transform: scale(1);
 }
 
+/* Individual timeline entries are observed independently of the section. */
+.experience-entry .timeline-item { opacity: 0; transform: translateX(-18px); }
+.experience-entry .timeline-item::before { transform: scale(0); }
+.experience-entry.is-visible .timeline-item { opacity: 1; transform: none; }
+.experience-entry.is-visible .timeline-item::before { transform: scale(1); }
+
 .portfolio-shell :is(button, a) {
   transition-property: color, background-color, border-color, box-shadow, transform, opacity;
   transition-duration: 220ms;
@@ -899,6 +958,18 @@ footer svg {
   .scroll-reveal.is-visible .pill-stagger > *:nth-child(n + 2) {
     transition-delay: 60ms;
   }
+  .experience-timeline {
+    gap: 1.25rem;
+    padding-left: 2.25rem;
+  }
+  .experience-timeline::before { left: .47rem; }
+  .experience-timeline-node {
+    top: 1.8rem;
+    left: -2.07rem;
+    width: .9rem;
+    height: .9rem;
+  }
+  .experience-card { padding: 1.5rem; }
 }
 
 /* ---------------- Light theme tokens ---------------- */
@@ -1185,7 +1256,12 @@ html.cursor-press .cursor-ring {
   .scroll-reveal:not(.is-visible) .project-reveal img,
   .scroll-reveal .project-reveal .project-card > div:last-child > *,
   .scroll-reveal .timeline-item,
-  .scroll-reveal .timeline-item::before {
+  .scroll-reveal .timeline-item::before,
+  .experience-timeline-node,
+  .experience-card,
+  .experience-card-header,
+  .experience-description,
+  .experience-stack > * {
     opacity: 1;
     transform: none;
     filter: none;

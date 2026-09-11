@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNod
 import {
   ArrowDown,
   ArrowUpRight,
+  BriefcaseBusiness,
+  CalendarDays,
   CheckCircle2,
   ChevronDown,
   Download,
@@ -9,6 +11,7 @@ import {
   Linkedin,
   Mail,
   Menu,
+  MapPin,
   Moon,
   Send,
   Sun,
@@ -93,6 +96,7 @@ const experiences = [
     company: "Troniqs Rationale Technologies",
     period: "FEB 2026 — MAY 2026",
     employmentType: "Full-time · On-site",
+    location: "Chennai, India",
     description:
       "Contributed to an enterprise-scale Pharmacy Logistics platform built on microservices, focusing on QA bug resolution, typed state flows, and cloud monitoring.",
     highlights: [
@@ -105,6 +109,7 @@ const experiences = [
   {
     role: "Full Stack Engineer",
     company: "Althi Solutions",
+    location: undefined,
     period: "FEB 2025 — JAN 2026",
     employmentType: "Full-time · On-site",
     description:
@@ -639,47 +644,6 @@ export function Portfolio() {
           </div>
         </section>
 
-        {/* <section
-          id="experience"
-          className="section-wrap scroll-reveal reveal-plain"
-          aria-labelledby="experience-title"
-        >
-          <div className="reveal-up">
-            <SectionLabel number="05" label="Experience" />
-          </div>
-          <h2 id="experience-title" className="section-title reveal-up d-1">
-            Shipping across the stack.
-          </h2>
-          <article className="glass-card reveal-zoom d-2 mt-14 grid gap-10 p-6 sm:p-10 lg:grid-cols-[.35fr_.65fr]">
-            <div>
-              <div className="status-chip">
-                <span className="pulse-dot" />
-                Current role
-              </div>
-              <p className="mt-7 font-mono text-xs text-muted-foreground">2024 — PRESENT</p>
-            </div>
-            <div>
-              <p className="font-mono text-xs text-primary">FULL STACK DEVELOPER</p>
-              <h3 className="mt-3 text-xl font-semibold sm:text-2xl">
-                Professional Engineering Experience
-              </h3>
-              <ul className="mt-8 grid gap-5 text-sm leading-7 text-muted-foreground">
-                <li className="experience-item timeline-item">
-                  Delivered end-to-end product features across React interfaces, Node.js APIs, data
-                  models, and cloud deployments.
-                </li>
-                <li className="experience-item timeline-item">
-                  Improved backend response paths through query optimization, predictable contracts,
-                  and robust async workflows.
-                </li>
-                <li className="experience-item timeline-item">
-                  Built reusable frontend systems that increased delivery consistency while
-                  preserving accessibility and performance.
-                </li>
-              </ul>
-            </div>
-          </article>
-        </section> */}
         <section
           id="experience"
           className="section-wrap scroll-reveal reveal-plain"
@@ -698,46 +662,69 @@ export function Portfolio() {
             </p>
           </div>
 
-          <div className="mt-14 space-y-6">
-            {experiences.map((exp, index) => (
-              <article
-                key={exp.company}
-                className="glass-card reveal-zoom d-2 grid gap-8 p-6 sm:p-10 lg:grid-cols-[.32fr_.68fr]"
-              >
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-xs font-semibold text-primary">
-                      {exp.role.toUpperCase()}
-                    </span>
-                  </div>
-                  <h3 className="mt-2 text-lg font-semibold text-foreground sm:text-xl">
-                    {exp.company}
-                  </h3>
-                  <p className="mt-2 font-mono text-xs text-muted-foreground">{exp.period}</p>
-                  <p className="mt-1 text-xs text-muted-foreground/80">{exp.employmentType}</p>
-                </div>
-
-                <div>
-                  <p className="text-sm leading-7 text-foreground/90">{exp.description}</p>
-                  <ul className="mt-6 grid gap-3 text-sm leading-7 text-muted-foreground">
-                    {exp.highlights.map((item) => (
-                      <li key={item} className="experience-item timeline-item">
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-7 flex flex-wrap gap-2 pt-2">
-                    {exp.stack.map((tech) => (
-                      <span key={tech} className="tech-chip">
-                        {tech}
+          <ol className="experience-timeline mt-14">
+            {experiences.map((exp) => (
+              <li key={exp.company} className="experience-entry scroll-reveal reveal-plain">
+                <span className="experience-timeline-node" aria-hidden="true" />
+                <article className="glass-card experience-card p-6 sm:p-9 lg:p-11">
+                  <header className="experience-card-header">
+                    <p className="font-mono text-xs font-semibold tracking-[.12em] text-primary uppercase">
+                      {exp.role}
+                    </p>
+                    <h3 className="mt-3 text-2xl font-semibold tracking-tight sm:text-3xl">
+                      {exp.company}
+                    </h3>
+                    <div className="mt-6 flex flex-wrap gap-x-5 gap-y-3 text-xs text-muted-foreground sm:text-sm">
+                      <span className="flex items-center gap-2">
+                        <CalendarDays className="size-4 text-primary" aria-hidden="true" />
+                        {exp.period}
                       </span>
-                    ))}
+                      <span className="flex items-center gap-2">
+                        <BriefcaseBusiness className="size-4 text-primary" aria-hidden="true" />
+                        {exp.employmentType}
+                      </span>
+                      {exp.location && (
+                        <span className="flex items-center gap-2">
+                          <MapPin className="size-4 text-primary" aria-hidden="true" />
+                          {exp.location}
+                        </span>
+                      )}
+                    </div>
+                  </header>
+
+                  <div className="experience-card-body mt-6 border-t border-border/60 pt-6 sm:mt-10 sm:pt-9">
+                    <p className="experience-description max-w-4xl text-base leading-8 text-foreground/90">
+                      {exp.description}
+                    </p>
+                    <div className="mt-9">
+                      <h4 className="font-mono text-[11px] font-semibold tracking-[.14em] text-muted-foreground uppercase">
+                        Key contributions
+                      </h4>
+                      <ul className="mt-5 grid gap-4 text-sm leading-7 text-muted-foreground">
+                        {exp.highlights.map((item) => (
+                          <li key={item} className="experience-item timeline-item">
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="mt-9">
+                      <h4 className="font-mono text-[11px] font-semibold tracking-[.14em] text-muted-foreground uppercase">
+                        Technologies
+                      </h4>
+                      <div className="experience-stack mt-4 flex flex-wrap gap-2">
+                        {exp.stack.map((tech) => (
+                          <span key={tech} className="tech-chip">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </article>
+                </article>
+              </li>
             ))}
-          </div>
+          </ol>
         </section>
 
         <section
