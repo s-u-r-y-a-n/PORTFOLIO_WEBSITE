@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CustomCursor } from "@/components/custom-cursor";
-import { useSmoothScroll, smoothScrollToId } from "@/hooks/use-smooth-scroll";
+import { smoothScrollToId } from "@/hooks/use-smooth-scroll";
 import { useTheme } from "@/hooks/use-theme";
 import financeImage from "@/assets/project-finance.jpg";
 import admissionsImage from "@/assets/project-admissions.jpg";
@@ -115,22 +115,12 @@ function ThemeToggle({ className = "" }: { className?: string }) {
 
 export function Portfolio() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [typedName, setTypedName] = useState("");
   const [sent, setSent] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("top");
   const navListRef = useRef<HTMLDivElement | null>(null);
   const linkRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const [indicator, setIndicator] = useState({ left: 0, width: 0, visible: false });
-  useSmoothScroll();
-
-  useEffect(() => {
-    const text = "Hi, I'm Surya N.";
-    if (typedName.length >= text.length) return;
-    const timer = window.setTimeout(() => setTypedName(text.slice(0, typedName.length + 1)), 72);
-    return () => window.clearTimeout(timer);
-  }, [typedName]);
-
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
@@ -184,26 +174,29 @@ export function Portfolio() {
       { threshold: [0, 0.15, 0.35, 0.6, 0.9], rootMargin: "-20% 0px -45%" },
     );
 
-    // safety net: reveal anything already inside the viewport (e.g. the footer at page bottom)
-    const revealNearBottom = () => {
+    // Resolve the initial viewport synchronously so reveals never wait for the first scroll.
+    const revealInViewport = () => {
       revealItems.forEach((item) => {
         if (item.classList.contains("is-visible")) return;
-        if (item.getBoundingClientRect().top < window.innerHeight - 24) {
+        const rect = item.getBoundingClientRect();
+        if (rect.bottom > 0 && rect.top < window.innerHeight - 24) {
           item.classList.add("is-visible");
           revealObserver.unobserve(item);
         }
       });
     };
 
-    revealItems.forEach((item) => revealObserver.observe(item));
+    revealInViewport();
+    revealItems.forEach((item) => {
+      if (!item.classList.contains("is-visible")) revealObserver.observe(item);
+    });
     sectionItems.forEach((item) => sectionObserver.observe(item));
+    resolveActive();
     window.addEventListener("scroll", resolveActive, { passive: true });
-    window.addEventListener("scroll", revealNearBottom, { passive: true });
     return () => {
       revealObserver.disconnect();
       sectionObserver.disconnect();
       window.removeEventListener("scroll", resolveActive);
-      window.removeEventListener("scroll", revealNearBottom);
     };
 
   }, []);
@@ -290,7 +283,7 @@ export function Portfolio() {
             <div className="max-w-3xl">
               <div className="status-chip hero-in hero-d1 mb-8"><span className="pulse-dot" />Available for full-stack opportunities</div>
                <h1 id="hero-title" className="hero-in hero-d2 font-semibold leading-[.95] tracking-normal">
-                <span className="block min-h-[1em] text-[clamp(2.35rem,5.4vw,5.25rem)]">{typedName}<span className="type-cursor">|</span></span>
+                 <span className="block min-h-[1em] text-[clamp(2.35rem,5.4vw,5.25rem)]"><TypedName /></span>
                 <span className="text-gradient mt-3 block text-[clamp(1.8rem,4.15vw,3.9rem)]">Full Stack<br className="hidden sm:block" /> Developer.</span>
               </h1>
               <p className="hero-in hero-d3 mt-8 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">I build dependable web applications from interface to infrastructure, with React, Node.js, MongoDB, and modern cloud services.</p>
@@ -307,7 +300,7 @@ export function Portfolio() {
               </div>
             </div>
 
-            <Terminal />
+            <div className="hero-in-scale hero-d3"><Terminal /></div>
           </div>
           <div className="absolute bottom-7 left-1/2 hidden -translate-x-1/2 items-center gap-2 font-mono text-[10px] tracking-[.18em] text-muted-foreground uppercase lg:flex">Scroll to explore <ChevronDown className="size-3" /></div>
         </section>
@@ -439,7 +432,7 @@ export function Portfolio() {
 
 function Terminal() {
   return (
-    <aside className="terminal-window reveal-delay" aria-label="Code profile preview">
+    <aside className="terminal-window" aria-label="Code profile preview">
       <div className="flex items-center justify-between border-b border-border/70 px-5 py-4">
         <div className="flex gap-2" aria-hidden="true"><span className="traffic bg-accent-coral" /><span className="traffic bg-accent-amber" /><span className="traffic bg-accent-lime" /></div>
         <span className="font-mono text-[11px] text-muted-foreground">surya-stack.js</span><span className="w-12" />
@@ -448,6 +441,31 @@ function Terminal() {
       <div className="flex items-center justify-between border-t border-border/60 px-5 py-3 font-mono text-[10px] text-muted-foreground"><span>node v22.0</span><span className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-accent-lime" />ready</span></div>
     </aside>
   );
+}
+
+function TypedName() {
+  const text = "Hi, I'm Surya N.";
+  const [length, setLength] = useState(0);
+  const startedAt = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setLength(text.length);
+      return;
+    }
+
+    let frame = 0;
+    if (startedAt.current === null) startedAt.current = performance.now();
+    const tick = (now: number) => {
+      const nextLength = Math.min(text.length, Math.floor((now - (startedAt.current ?? now)) / 72) + 1);
+      setLength((current) => current === nextLength ? current : nextLength);
+      if (nextLength < text.length) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  return <>{text.slice(0, length)}<span className="type-cursor">|</span></>;
 }
 
 function SectionLabel({ number, label }: { number: string; label: string }) {
