@@ -1,4 +1,12 @@
-const skillGroups = [
+export interface SkillGroup {
+  number: string;
+  title: string;
+  copy: string;
+  skills: string[];
+  primary: string[];
+}
+
+const skillGroups: SkillGroup[] = [
   {
     number: "01",
     title: "Frontend Architecture",
@@ -14,7 +22,7 @@ const skillGroups = [
       "Prime React",
       "Material UI",
     ],
-    primary: [],
+    primary: ["React", "TypeScript", "Redux Toolkit"],
   },
   {
     number: "02",
@@ -30,7 +38,7 @@ const skillGroups = [
       "JWT Authentication",
       "Role-Based Access Control (RBAC)",
     ],
-    primary: [],
+    primary: ["Node.js", "Express.js", "REST APIs", "JWT Authentication"],
   },
   {
     number: "03",
@@ -51,7 +59,7 @@ const skillGroups = [
       "GitHub",
       "Postman",
     ],
-    primary: [],
+    primary: ["MySQL", "MongoDB", "AWS Lambda", "AWS SAM"],
   },
 ];
 
