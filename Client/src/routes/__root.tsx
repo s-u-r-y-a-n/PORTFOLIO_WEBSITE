@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { useSmoothScroll } from "../hooks/use-smooth-scroll";
+import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -79,10 +80,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Surya N — Full Stack Developer" },
-      { name: "description", content: "Surya N builds dependable full-stack products with React, Node.js, databases, and cloud services." },
+      {
+        name: "description",
+        content:
+          "Surya N builds dependable full-stack products with React, Node.js, databases, and cloud services.",
+      },
       { name: "author", content: "Surya N" },
       { property: "og:title", content: "Surya N — Full Stack Developer" },
-      { property: "og:description", content: "Dependable web applications from interface to infrastructure." },
+      {
+        property: "og:description",
+        content: "Dependable web applications from interface to infrastructure.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -133,6 +141,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
+      <Toaster />
     </QueryClientProvider>
   );
 }

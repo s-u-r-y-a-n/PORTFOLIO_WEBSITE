@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import axios from "axios";
+import { toast } from "sonner";
 import {
   ArrowDown,
   ArrowUpRight,
@@ -9,6 +11,7 @@ import {
   Download,
   Github,
   Linkedin,
+  Loader2,
   Mail,
   Menu,
   MapPin,
@@ -24,6 +27,7 @@ import { useTheme } from "@/hooks/use-theme";
 import skillGroups from "@/data/skills";
 import projects, { type Project } from "@/data/projects";
 import individualProjects, { type IndividualProject } from "@/data/individualProjects";
+import { sendContactMessage } from "@/lib/contact.api";
 
 const navItems = [
   ["About", "about"],
@@ -117,8 +121,6 @@ const architecture = [
   ],
 ] as const;
 
-
-
 function scrollTo(id: string) {
   smoothScrollToId(id);
 }
@@ -143,6 +145,7 @@ function ThemeToggle({ className = "" }: { className?: string }) {
 export function Portfolio() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sent, setSent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeSection, setActiveSection] = useState("top");
   const navListRef = useRef<HTMLDivElement | null>(null);
@@ -246,11 +249,73 @@ export function Portfolio() {
     return () => window.removeEventListener("resize", measureIndicator);
   }, [measureIndicator]);
 
-  const submitContact = (event: FormEvent<HTMLFormElement>) => {
+  const handleFieldInput = (event: FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    (event.currentTarget as HTMLInputElement | HTMLTextAreaElement).setCustomValidity("");
+    if (sent) setSent(false);
+  };
+
+  const submitContact = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!event.currentTarget.reportValidity()) return;
-    setSent(true);
-    event.currentTarget.reset();
+    if (isSubmitting) return;
+
+    const form = event.currentTarget;
+    const nameInput = form.elements.namedItem("name") as HTMLInputElement | null;
+    const emailInput = form.elements.namedItem("email") as HTMLInputElement | null;
+    const messageInput = form.elements.namedItem("message") as HTMLTextAreaElement | null;
+
+    // Clear any prior custom validity messages
+    nameInput?.setCustomValidity("");
+    emailInput?.setCustomValidity("");
+    messageInput?.setCustomValidity("");
+
+    const name = nameInput?.value.trim() ?? "";
+    const email = emailInput?.value.trim() ?? "";
+    const message = messageInput?.value.trim() ?? "";
+
+    let hasValidationError = false;
+
+    if (!name) {
+      nameInput?.setCustomValidity("Please enter your name.");
+      hasValidationError = true;
+    }
+
+    if (!email) {
+      emailInput?.setCustomValidity("Please enter your email address.");
+      hasValidationError = true;
+    }
+
+    if (!message) {
+      messageInput?.setCustomValidity("Please enter a message.");
+      hasValidationError = true;
+    }
+
+    if (hasValidationError || !form.reportValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await sendContactMessage({ name, email, message });
+      toast.success(response.message || "Message sent successfully!");
+      setSent(true);
+      form.reset();
+    } catch (error: unknown) {
+      let errorMessage = "Failed to send message. Please try again later.";
+      if (axios.isAxiosError(error)) {
+        if (error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.code === "ERR_NETWORK" || !error.response) {
+          errorMessage = "Unable to connect to the server. Please check your network connection.";
+        }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      toast.error(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -556,7 +621,8 @@ export function Portfolio() {
               </h2>
             </div>
             <p className="reveal-up d-2 max-w-sm text-sm leading-6 text-muted-foreground">
-              Commercial platforms and production services I have contributed to professionally, focusing on dependable architectures, database modeling, and resilient APIs.
+              Commercial platforms and production services I have contributed to professionally,
+              focusing on dependable architectures, database modeling, and resilient APIs.
             </p>
           </div>
 
@@ -585,12 +651,11 @@ export function Portfolio() {
                 <p className="font-mono text-xs font-semibold tracking-[.14em] text-accent-amber uppercase">
                   Personal Initiatives & Explorations
                 </p>
-                <h3 className="section-title reveal-up d-1 mt-2 max-w-2xl">
-                  Individual Projects.
-                </h3>
+                <h3 className="section-title reveal-up d-1 mt-2 max-w-2xl">Individual Projects.</h3>
               </div>
               <p className="reveal-up d-2 max-w-sm text-sm leading-6 text-muted-foreground">
-                Projects I designed and built independently to explore ideas, strengthen my engineering skills, and solve practical problems.
+                Projects I designed and built independently to explore ideas, strengthen my
+                engineering skills, and solve practical problems.
               </p>
             </div>
 
@@ -708,11 +773,11 @@ export function Portfolio() {
               </p>
               <div className="reveal-up d-3">
                 <a
-                  href="mailto:surya@example.com"
+                  href="mailto:surya86104@gmail.com"
                   className="mt-9 inline-flex items-center gap-3 rounded-full border border-border bg-secondary/50 px-4 py-3 text-sm transition-colors hover:border-primary/60"
                 >
                   <Mail className="size-4 text-primary" />
-                  surya@example.com
+                  surya86104@gmail.com
                 </a>
               </div>
               <div className="reveal-up d-4 mt-4 flex items-center gap-2 text-xs text-muted-foreground">
@@ -725,14 +790,44 @@ export function Portfolio() {
               className="reveal-zoom d-2 grid gap-5"
               aria-label="Contact form"
             >
-              <FloatingField label="Your name" name="name" type="text" required />
-              <FloatingField label="Email address" name="email" type="email" required />
+              <FloatingField
+                label="Your name"
+                name="name"
+                type="text"
+                required
+                disabled={isSubmitting}
+                onInput={handleFieldInput}
+              />
+              <FloatingField
+                label="Email address"
+                name="email"
+                type="email"
+                required
+                disabled={isSubmitting}
+                onInput={handleFieldInput}
+              />
               <label className="floating-field">
-                <textarea name="message" placeholder=" " rows={5} required />
+                <textarea
+                  name="message"
+                  placeholder=" "
+                  rows={5}
+                  required
+                  disabled={isSubmitting}
+                  onInput={handleFieldInput}
+                />
                 <span>Tell me about your project</span>
               </label>
-              <Button type="submit" size="lg" className="h-13 rounded-full sm:justify-self-start">
-                {sent ? (
+              <Button
+                type="submit"
+                size="lg"
+                disabled={isSubmitting}
+                className="h-13 rounded-full sm:justify-self-start"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" /> Sending message...
+                  </>
+                ) : sent ? (
                   <>
                     <CheckCircle2 /> Message ready
                   </>
@@ -891,13 +986,7 @@ function SocialLink({ icon, label, href }: { icon: ReactNode; label: string; hre
   );
 }
 
-function ProjectCard({
-  project,
-  reversed,
-}: {
-  project: Project;
-  reversed: boolean;
-}) {
+function ProjectCard({ project, reversed }: { project: Project; reversed: boolean }) {
   return (
     <article className="project-card grid overflow-hidden lg:grid-cols-2">
       <div
@@ -1057,15 +1146,26 @@ function FloatingField({
   name,
   type,
   required,
+  disabled,
+  onInput,
 }: {
   label: string;
   name: string;
   type: string;
   required?: boolean;
+  disabled?: boolean;
+  onInput?: (event: FormEvent<HTMLInputElement>) => void;
 }) {
   return (
     <label className="floating-field">
-      <input name={name} type={type} placeholder=" " required={required} />
+      <input
+        name={name}
+        type={type}
+        placeholder=" "
+        required={required}
+        disabled={disabled}
+        onInput={onInput}
+      />
       <span>{label}</span>
     </label>
   );
