@@ -97,6 +97,30 @@ const experiences = [
       "MongoDB",
     ],
   },
+  {
+    role: "MERN Stack Developer Intern",
+    company: "Spangles InfoTech",
+    location: "Nagercoil, India",
+    period: "OCT 2024 — DEC 2024",
+    employmentType: "Internship · On-site",
+    description:
+      "Completed a hands-on web development internship, assisting in the implementation of full-stack features, reusable UI components, and API integrations.",
+    highlights: [
+      "Built responsive user interfaces and modular frontend components using React and modern CSS styling.",
+      "Assisted in developing RESTful API endpoints and handling backend CRUD logic with Node.js and Express.",
+      "Configured MongoDB database schemas and tested API integration paths using Postman.",
+    ],
+    stack: [
+      "React",
+      "JavaScript",
+      "Node.js",
+      "Express",
+      "MongoDB",
+      "REST APIs",
+      "Postman",
+      "Git",
+    ],
+  },
 ];
 
 const architecture = [
@@ -1114,15 +1138,13 @@ function IndividualProjectCard({
 
   return (
     <article
-      className={`project-card grid overflow-hidden ${
-        hasImage ? "lg:grid-cols-2" : "lg:grid-cols-1"
-      }`}
+      className={`project-card grid overflow-hidden ${hasImage ? "lg:grid-cols-2" : "lg:grid-cols-1"
+        }`}
     >
       {hasImage && (
         <div
-          className={`group relative min-h-72 overflow-hidden lg:min-h-[32rem] ${
-            reversed ? "lg:order-2" : ""
-          }`}
+          className={`group relative min-h-72 overflow-hidden lg:min-h-[32rem] ${reversed ? "lg:order-2" : ""
+            }`}
         >
           <img
             src={project.image}
