@@ -974,15 +974,13 @@ function IndividualProjectCard({
 
   return (
     <article
-      className={`project-card grid overflow-hidden ${
-        hasImage ? "lg:grid-cols-2" : "lg:grid-cols-1"
-      }`}
+      className={`project-card grid overflow-hidden ${hasImage ? "lg:grid-cols-2" : "lg:grid-cols-1"
+        }`}
     >
       {hasImage && (
         <div
-          className={`group relative min-h-72 overflow-hidden lg:min-h-[32rem] ${
-            reversed ? "lg:order-2" : ""
-          }`}
+          className={`group relative min-h-72 overflow-hidden lg:min-h-[32rem] ${reversed ? "lg:order-2" : ""
+            }`}
         >
           <img
             src={project.image}

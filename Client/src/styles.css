@@ -975,111 +975,265 @@ footer svg {
 /* ---------------- Light theme tokens ---------------- */
 html.light {
   color-scheme: light;
-  --background: oklch(0.985 0.004 200);
-  --foreground: oklch(0.24 0.022 220);
-  --card: oklch(1 0 0 / 0.9);
-  --card-foreground: oklch(0.24 0.022 220);
-  --popover: oklch(1 0 0 / 0.96);
-  --popover-foreground: oklch(0.24 0.022 220);
-  --primary: oklch(0.56 0.1 195);
-  --primary-foreground: oklch(0.99 0.005 190);
-  --secondary: oklch(0.28 0.03 220 / 0.05);
-  --secondary-foreground: oklch(0.28 0.025 220);
-  --muted: oklch(0.28 0.03 220 / 0.05);
-  --muted-foreground: oklch(0.48 0.02 220);
-  --accent: oklch(0.56 0.1 195 / 0.1);
-  --accent-foreground: oklch(0.42 0.09 195);
-  --border: oklch(0.3 0.03 225 / 0.14);
-  --input: oklch(0.3 0.03 225 / 0.2);
-  --ring: oklch(0.56 0.1 195);
-  --accent-lime: oklch(0.58 0.14 135);
-  --accent-coral: oklch(0.6 0.16 30);
-  --accent-amber: oklch(0.62 0.13 72);
-  --pill-foreground: var(--foreground);
-  --shadow-glass: 0 18px 44px -26px oklch(0.3 0.04 225 / 0.4), inset 0 1px 0 oklch(1 0 0 / 0.9);
-  --shadow-accent: 0 14px 34px -20px oklch(0.56 0.1 195 / 0.55);
+  --background: #F2F6F5;
+  --foreground: #172326;
+  --card: #FFFFFF;
+  --card-foreground: #172326;
+  --popover: #FFFFFF;
+  --popover-foreground: #172326;
+  --primary: #0F8F91;
+  --primary-foreground: #FFFFFF;
+  --secondary: #FAFCFB;
+  --secondary-foreground: #172326;
+  --muted: #E8F4F3;
+  --muted-foreground: #526166;
+  --accent: #E8F4F3;
+  --accent-foreground: #087A7C;
+  --border: #D4E0DE;
+  --input: #D4E0DE;
+  --ring: #0F8F91;
+  --accent-lime: #0F8F91;
+  --accent-coral: #C7513E;
+  --accent-amber: #B8731E;
+  --pill-foreground: #172326;
+  --shadow-glass: 0 10px 30px -10px rgba(15, 143, 145, 0.08), 0 4px 16px -2px rgba(23, 35, 38, 0.04);
+  --shadow-accent: 0 10px 26px -10px rgba(15, 143, 145, 0.42);
 }
 
 html.light .portfolio-shell {
   background:
-    radial-gradient(ellipse at 75% 5%, oklch(0.86 0.06 190 / 0.4), transparent 34%),
-    linear-gradient(
-      150deg,
-      oklch(0.985 0.004 200),
-      oklch(0.955 0.012 195) 52%,
-      oklch(0.985 0.004 200)
-    );
+    radial-gradient(ellipse at 75% 5%, rgba(15, 143, 145, 0.06), transparent 38%),
+    #F2F6F5;
 }
 html.light .hero-grid {
-  opacity: 0.5;
+  opacity: 0.25;
 }
+
+/* Light theme cards: solid crisp white with subtle border and soft depth */
 html.light .glass-card,
 html.light .project-card {
-  background: linear-gradient(145deg, oklch(1 0 0 / 0.94), oklch(1 0 0 / 0.72));
-}
-html.light .architecture-slab {
-  background: linear-gradient(100deg, oklch(1 0 0 / 0.95), oklch(1 0 0 / 0.7));
-  box-shadow:
-    inset 0 1px 0 oklch(1 0 0 / 0.9),
-    0 10px 26px -22px oklch(0.3 0.04 225 / 0.6);
-}
-html.light .architecture-slab:hover {
-  box-shadow:
-    inset 0 1px 0 oklch(1 0 0 / 0.9),
-    0 16px 30px -22px oklch(0.3 0.04 225 / 0.6);
+  background: #FFFFFF;
+  border: 1px solid #D4E0DE;
+  box-shadow: 0 10px 30px -10px rgba(15, 143, 145, 0.08), 0 4px 16px -2px rgba(23, 35, 38, 0.04);
 }
 html.light .glass-card:hover,
 html.light .project-card:hover {
-  box-shadow: 0 26px 56px -32px oklch(0.3 0.04 225 / 0.55);
+  border-color: rgba(15, 143, 145, 0.45);
+  box-shadow: 0 20px 42px -14px rgba(15, 143, 145, 0.16), 0 6px 20px -4px rgba(23, 35, 38, 0.06);
 }
+html.light .glass-card::after {
+  display: none;
+}
+
+html.light .architecture-slab {
+  background: #FFFFFF;
+  border: 1px solid #D4E0DE;
+  box-shadow: 0 4px 14px -3px rgba(23, 35, 38, 0.04);
+}
+html.light .architecture-slab:hover {
+  border-color: rgba(15, 143, 145, 0.45);
+  box-shadow: 0 10px 24px -6px rgba(15, 143, 145, 0.12);
+}
+
+/* Hero Code Window: intentionally dark to maintain contrast & focal point */
 html.light .terminal-window {
-  background: oklch(0.19 0.025 220 / 0.97);
-  color: oklch(0.95 0.01 200);
-  box-shadow: 0 34px 70px -34px oklch(0.3 0.04 225 / 0.6);
+  background: #111A1D;
+  border: 1px solid rgba(212, 224, 222, 0.2);
+  color: #E8F4F3;
+  box-shadow: 0 28px 64px -22px rgba(17, 26, 29, 0.38);
+}
+html.light .terminal-window::after {
+  background: linear-gradient(125deg, rgba(255, 255, 255, 0.06), transparent 25%);
 }
 html.light .terminal-window .text-muted-foreground {
-  color: oklch(0.72 0.02 200);
+  color: #8C9EA1;
 }
 html.light .code-dim {
-  color: oklch(0.6 0.02 200);
+  color: #556B6F;
 }
 html.light .terminal-window .text-primary {
-  color: oklch(0.8 0.11 190);
+  color: #3BD1D4;
 }
 html.light .code-lime {
-  color: oklch(0.82 0.16 130);
+  color: #72E496;
 }
 html.light .code-coral {
-  color: oklch(0.76 0.14 35);
+  color: #FF8F7D;
 }
+
+/* Contact panel */
 html.light .contact-panel {
-  background: linear-gradient(
-    135deg,
-    color-mix(in oklab, var(--primary) 9%, oklch(1 0 0 / 0.85)),
-    oklch(1 0 0 / 0.85)
-  );
+  background: #FFFFFF;
+  border: 1px solid #D4E0DE;
+  box-shadow: 0 16px 40px -15px rgba(15, 143, 145, 0.09), 0 4px 18px -3px rgba(23, 35, 38, 0.04);
 }
+
+/* Floating Navbar: crisp white surface over #F2F6F5 */
 html.light .glass-nav {
-  background: color-mix(in oklab, oklch(1 0 0) 78%, transparent);
-  box-shadow:
-    0 14px 40px -26px oklch(0.3 0.04 225 / 0.55),
-    inset 0 1px 0 oklch(1 0 0 / 0.9);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #D4E0DE;
+  backdrop-filter: blur(20px) saturate(140%);
+  box-shadow: 0 8px 24px -8px rgba(23, 35, 38, 0.08);
 }
 html.light .navbar-scrolled .glass-nav {
-  background: color-mix(in oklab, oklch(1 0 0) 94%, transparent);
-  box-shadow: 0 16px 44px -24px oklch(0.3 0.04 225 / 0.5);
+  background: #FFFFFF;
+  border: 1px solid #D4E0DE;
+  box-shadow: 0 12px 32px -10px rgba(23, 35, 38, 0.12);
 }
-html.light .terminal-window::after,
-html.light .glass-card::after {
-  background: linear-gradient(125deg, oklch(1 0 0 / 0.5), transparent 23%);
+html.light .nav-indicator {
+  background: #E8F4F3;
+  border: 1px solid #C9DDDB;
 }
-html.light .social-pill:hover,
+html.light .nav-link {
+  color: #526166;
+}
+html.light .nav-link:hover {
+  color: #172326;
+  background: #FAFCFB;
+}
+html.light .nav-link.is-active {
+  color: #087A7C;
+  font-weight: 600;
+}
+html.light .nav-brand-mark {
+  background: #0F8F91;
+  color: #FFFFFF;
+}
+
+/* Availability Badge */
+html.light .status-chip {
+  background: #E8F4F3;
+  border: 1px solid #C9DDDB;
+  color: #087A7C;
+}
+html.light .pulse-dot {
+  background: #0F8F91;
+  box-shadow: 0 0 0 4px rgba(15, 143, 145, 0.2);
+}
+
+/* Skill pills & Tech chips */
+html.light .skill-pill,
+html.light .tech-chip {
+  background: #E8F4F3;
+  border: 1px solid #C9DDDB;
+  color: #087A7C;
+}
 html.light .skill-pill:hover,
 html.light .tech-chip:hover {
-  box-shadow: 0 10px 20px -16px oklch(0.3 0.04 225 / 0.7);
+  background: #D8ECE9;
+  border-color: #0F8F91;
+  color: #065F61;
+  box-shadow: 0 6px 14px -6px rgba(15, 143, 145, 0.35);
 }
+html.light .skill-pill-primary {
+  background: #D8ECE9;
+  border: 1px solid #0F8F91;
+  color: #087A7C;
+  font-weight: 600;
+}
+
+/* Social links */
+html.light .social-pill {
+  background: #FFFFFF;
+  border: 1px solid #D4E0DE;
+  color: #172326;
+}
+html.light .social-pill:hover {
+  background: #E8F4F3;
+  border-color: #0F8F91;
+  color: #087A7C;
+  box-shadow: 0 8px 18px -8px rgba(15, 143, 145, 0.35);
+}
+
+/* Buttons */
+html.light button.bg-primary,
+html.light .bg-primary {
+  background-color: #0F8F91;
+  color: #FFFFFF;
+}
+html.light button.bg-primary:hover,
+html.light .bg-primary:hover {
+  background-color: #087A7C;
+}
+html.light .bg-secondary\/60,
+html.light .bg-secondary\/50 {
+  background-color: #FFFFFF;
+  border: 1px solid #D4E0DE;
+  color: #172326;
+}
+html.light .bg-secondary\/60:hover,
+html.light .bg-secondary\/50:hover {
+  background-color: #E8F4F3;
+  border-color: #0F8F91;
+  color: #087A7C;
+}
+
+/* Theme toggle */
+html.light .theme-toggle {
+  background: #FFFFFF;
+  border: 1px solid #D4E0DE;
+  color: #526166;
+}
+html.light .theme-toggle:hover {
+  background: #E8F4F3;
+  border-color: #0F8F91;
+  color: #087A7C;
+  box-shadow: 0 8px 16px -8px rgba(15, 143, 145, 0.35);
+}
+
+/* Mobile navigation drawer */
+html.light .mobile-menu {
+  background: #FFFFFF;
+  border-color: #D4E0DE;
+}
+html.light .mobile-nav-link {
+  color: #526166;
+}
+html.light .mobile-nav-link:hover,
+html.light .mobile-nav-link.is-active {
+  background: #E8F4F3;
+  color: #087A7C;
+}
+
+/* Floating contact fields */
+html.light .floating-field input,
+html.light .floating-field textarea {
+  background: #FFFFFF;
+  border: 1px solid #D4E0DE;
+  color: #172326;
+}
+html.light .floating-field span {
+  color: #6B797D;
+}
+html.light .floating-field input:focus,
+html.light .floating-field textarea:focus {
+  border-color: #0F8F91;
+  background: #FFFFFF;
+}
+html.light .floating-field input:focus + span,
+html.light .floating-field input:not(:placeholder-shown) + span,
+html.light .floating-field textarea:focus + span,
+html.light .floating-field textarea:not(:placeholder-shown) + span {
+  color: #087A7C;
+}
+
+/* Section divider borders */
+html.light .border-border\/40 {
+  border-color: #D4E0DE;
+}
+html.light .border-border\/60 {
+  border-color: #D4E0DE;
+}
+html.light .border-border\/70 {
+  border-color: #D4E0DE;
+}
+html.light .border-border\/80 {
+  border-color: #D4E0DE;
+}
+
+/* Headline gradient */
 html.light .text-gradient {
-  background: linear-gradient(110deg, var(--foreground), var(--primary) 55%, oklch(0.55 0.14 150));
+  background: linear-gradient(110deg, #172326, #0F8F91 60%, #087A7C);
   background-clip: text;
   color: transparent;
 }
