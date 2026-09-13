@@ -14,6 +14,7 @@ import {
   Loader2,
   Mail,
   Menu,
+  MessageCircle,
   MapPin,
   Moon,
   Send,
@@ -468,7 +469,16 @@ export function Portfolio() {
               <div className="hero-in hero-d5 mt-7 flex flex-wrap gap-2">
                 <SocialLink icon={<Github />} label="GitHub" href="https://github.com/" />
                 <SocialLink icon={<Linkedin />} label="LinkedIn" href="https://linkedin.com/" />
-                <SocialLink icon={<Mail />} label="Email" href="mailto:surya@example.com" />
+                <SocialLink
+                  icon={<Mail />}
+                  label="Email"
+                  href="https://mail.google.com/mail/?view=cm&fs=1&to=surya86104@gmail.com"
+                />
+                <SocialLink
+                  icon={<MessageCircle />}
+                  label="WhatsApp"
+                  href="https://wa.me/918903091256"
+                />
               </div>
             </div>
 
@@ -771,13 +781,24 @@ export function Portfolio() {
                 Have a product challenge, a role, or an idea worth exploring? I’d like to hear about
                 it.
               </p>
-              <div className="reveal-up d-3">
+              <div className="reveal-up d-3 mt-9 flex flex-wrap gap-3">
                 <a
-                  href="mailto:surya86104@gmail.com"
-                  className="mt-9 inline-flex items-center gap-3 rounded-full border border-border bg-secondary/50 px-4 py-3 text-sm transition-colors hover:border-primary/60"
+                  href="https://mail.google.com/mail/?view=cm&fs=1&to=surya86104@gmail.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 rounded-full border border-border bg-secondary/50 px-4 py-3 text-sm transition-colors hover:border-primary/60"
                 >
                   <Mail className="size-4 text-primary" />
                   surya86104@gmail.com
+                </a>
+                <a
+                  href="https://wa.me/918903091256"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 rounded-full border border-border bg-secondary/50 px-4 py-3 text-sm transition-colors hover:border-primary/60"
+                >
+                  <MessageCircle className="size-4 text-primary" />
+                  +91 89030 91256
                 </a>
               </div>
               <div className="reveal-up d-4 mt-4 flex items-center gap-2 text-xs text-muted-foreground">
@@ -850,11 +871,41 @@ export function Portfolio() {
       <footer className="mx-auto flex max-w-7xl flex-col gap-5 border-t border-border/60 px-5 py-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-12">
         <p>© 2026 Surya N. Built with intent.</p>
         <div className="flex items-center gap-5">
-          <a href="https://github.com/" aria-label="GitHub" className="hover:text-foreground">
+          <a
+            href="https://github.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="GitHub"
+            className="hover:text-foreground"
+          >
             <Github className="size-4" />
           </a>
-          <a href="https://linkedin.com/" aria-label="LinkedIn" className="hover:text-foreground">
+          <a
+            href="https://linkedin.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="LinkedIn"
+            className="hover:text-foreground"
+          >
             <Linkedin className="size-4" />
+          </a>
+          <a
+            href="https://mail.google.com/mail/?view=cm&fs=1&to=surya86104@gmail.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Email (Gmail)"
+            className="hover:text-foreground"
+          >
+            <Mail className="size-4" />
+          </a>
+          <a
+            href="https://wa.me/918903091256"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="WhatsApp"
+            className="hover:text-foreground"
+          >
+            <MessageCircle className="size-4" />
           </a>
           <a
             href="#top"
@@ -976,7 +1027,7 @@ function SocialLink({ icon, label, href }: { icon: ReactNode; label: string; hre
     <a
       href={href}
       target={href.startsWith("http") ? "_blank" : undefined}
-      rel="noreferrer"
+      rel="noopener noreferrer"
       className="social-pill group"
     >
       {icon}
@@ -1063,13 +1114,15 @@ function IndividualProjectCard({
 
   return (
     <article
-      className={`project-card grid overflow-hidden ${hasImage ? "lg:grid-cols-2" : "lg:grid-cols-1"
-        }`}
+      className={`project-card grid overflow-hidden ${
+        hasImage ? "lg:grid-cols-2" : "lg:grid-cols-1"
+      }`}
     >
       {hasImage && (
         <div
-          className={`group relative min-h-72 overflow-hidden lg:min-h-[32rem] ${reversed ? "lg:order-2" : ""
-            }`}
+          className={`group relative min-h-72 overflow-hidden lg:min-h-[32rem] ${
+            reversed ? "lg:order-2" : ""
+          }`}
         >
           <img
             src={project.image}

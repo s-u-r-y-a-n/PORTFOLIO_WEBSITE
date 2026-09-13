@@ -73,7 +73,7 @@ const projects: Project[] = [
     number: "03",
     title: "Serverless Admission Management System",
     type: "EDTECH · SERVERLESS",
-    image: admissionsImage,
+    image: financeImage,
 
     description:
       "A serverless admission platform designed to digitize end-to-end college admission and scholarship workflows with secure multi-role access and cloud-based document management.",
