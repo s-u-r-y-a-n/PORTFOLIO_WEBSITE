@@ -1,0 +1,96 @@
+.skill-pill {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--secondary);
+  padding: 0.48rem 0.72rem;
+  font-family: "Helvetica Neue", system-ui, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--pill-foreground);
+  transition:
+    transform 220ms ease,
+    color 220ms ease,
+    border-color 220ms ease,
+    background-color 220ms ease;
+
+  &:hover {
+    transform: translateY(-2px) scale(1.02);
+    color: var(--foreground);
+    border-color: color-mix(in oklab, var(--primary) 38%, transparent);
+    background: color-mix(in oklab, var(--primary) 7%, var(--secondary));
+  }
+}
+
+.skill-pill-primary {
+  border-color: color-mix(in oklab, var(--primary) 28%, transparent);
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--pill-foreground);
+}
+
+/* Skills: progressive pill reveal */
+.scroll-reveal .pill-stagger > * {
+  opacity: 0;
+  transform: translateY(14px) scale(0.92);
+  transition:
+    opacity 480ms ease,
+    transform 480ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.scroll-reveal.is-visible .pill-stagger > * {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+
+  &:nth-child(1) {
+    transition-delay: 120ms;
+  }
+  &:nth-child(2) {
+    transition-delay: 200ms;
+  }
+  &:nth-child(3) {
+    transition-delay: 280ms;
+  }
+  &:nth-child(4) {
+    transition-delay: 360ms;
+  }
+  &:nth-child(5) {
+    transition-delay: 440ms;
+  }
+  &:nth-child(6) {
+    transition-delay: 520ms;
+  }
+}
+
+@media (max-width: 767px) {
+  .scroll-reveal.is-visible .pill-stagger > * {
+    transition-delay: 0ms;
+
+    &:nth-child(n + 2) {
+      transition-delay: 60ms;
+    }
+  }
+}
+
+/* ---------------- Skills Light Theme ---------------- */
+html.light {
+  .skill-pill {
+    background: #e8f4f3;
+    border: 1px solid #c9dddb;
+    color: #087a7c;
+
+    &:hover {
+      background: #d8ece9;
+      border-color: #0f8f91;
+      color: #065f61;
+      box-shadow: 0 6px 14px -6px rgba(15, 143, 145, 0.35);
+    }
+  }
+
+  .skill-pill-primary {
+    background: #d8ece9;
+    border: 1px solid #0f8f91;
+    color: #087a7c;
+    font-weight: 600;
+  }
+}

@@ -1,0 +1,96 @@
+.contact-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--primary) 7%, transparent),
+    oklch(1 0 0 / 0.025)
+  );
+  box-shadow: var(--shadow-glass);
+}
+
+.floating-field {
+  position: relative;
+  display: block;
+
+  input,
+  textarea {
+    width: 100%;
+    resize: none;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--secondary);
+    padding: 1.45rem 1rem 0.7rem;
+    color: var(--foreground);
+    transition:
+      border-color 180ms ease,
+      background 180ms ease;
+
+    &:focus {
+      border-color: var(--primary);
+      background: color-mix(in oklab, var(--primary) 5%, transparent);
+      outline: none;
+    }
+  }
+
+  textarea {
+    padding-top: 1.7rem;
+  }
+
+  span {
+    position: absolute;
+    top: 1.05rem;
+    left: 1rem;
+    color: var(--muted-foreground);
+    font-size: 0.8rem;
+    pointer-events: none;
+    transform-origin: left;
+    transition:
+      transform 180ms ease,
+      color 180ms ease;
+  }
+
+  input:focus + span,
+  input:not(:placeholder-shown) + span,
+  textarea:focus + span,
+  textarea:not(:placeholder-shown) + span {
+    transform: translateY(-0.62rem) scale(0.76);
+    color: var(--primary);
+  }
+}
+
+/* ---------------- Contact Light Theme ---------------- */
+html.light {
+  .contact-panel {
+    background: #ffffff;
+    border: 1px solid #d4e0de;
+    box-shadow:
+      0 16px 40px -15px rgba(15, 143, 145, 0.09),
+      0 4px 18px -3px rgba(23, 35, 38, 0.04);
+  }
+
+  .floating-field {
+    input,
+    textarea {
+      background: #ffffff;
+      border: 1px solid #d4e0de;
+      color: #172326;
+
+      &:focus {
+        border-color: #0f8f91;
+        background: #ffffff;
+      }
+    }
+
+    span {
+      color: #6b797d;
+    }
+
+    input:focus + span,
+    input:not(:placeholder-shown) + span,
+    textarea:focus + span,
+    textarea:not(:placeholder-shown) + span {
+      color: #087a7c;
+    }
+  }
+}
