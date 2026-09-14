@@ -162,8 +162,8 @@ export function Hero() {
             </Button>
           </div>
           <div className="hero-in hero-d5 mt-7 flex flex-wrap gap-2">
-            <SocialLink icon={<Github />} label="GitHub" href="https://github.com/" />
-            <SocialLink icon={<Linkedin />} label="LinkedIn" href="https://linkedin.com/" />
+            <SocialLink icon={<Github />} label="GitHub" href="https://github.com/s-u-r-y-a-n" />
+            <SocialLink icon={<Linkedin />} label="LinkedIn" href="https://www.linkedin.com/in/surya30112000/" />
             <SocialLink
               icon={<Mail />}
               label="Email"

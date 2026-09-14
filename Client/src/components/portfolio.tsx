@@ -263,7 +263,7 @@ export function Portfolio() {
         <p>© 2026 Surya N. Built with intent.</p>
         <div className="flex items-center gap-5">
           <a
-            href="https://github.com/"
+            href="https://github.com/s-u-r-y-a-n"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub"
@@ -272,7 +272,7 @@ export function Portfolio() {
             <Github className="size-4" />
           </a>
           <a
-            href="https://linkedin.com/"
+            href="https://www.linkedin.com/in/surya30112000/"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="LinkedIn"

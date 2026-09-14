@@ -22,7 +22,7 @@ const skillGroups: SkillGroup[] = [
       "Prime React",
       "Material UI",
     ],
-    primary: ["React", "TypeScript", "Redux Toolkit"],
+    primary: [],
   },
   {
     number: "02",
@@ -38,7 +38,7 @@ const skillGroups: SkillGroup[] = [
       "JWT Authentication",
       "Role-Based Access Control (RBAC)",
     ],
-    primary: ["Node.js", "Express.js", "REST APIs", "JWT Authentication"],
+    primary: [],
   },
   {
     number: "03",
@@ -59,7 +59,7 @@ const skillGroups: SkillGroup[] = [
       "GitHub",
       "Postman",
     ],
-    primary: ["MySQL", "MongoDB", "AWS Lambda", "AWS SAM"],
+    primary: [],
   },
 ];
 

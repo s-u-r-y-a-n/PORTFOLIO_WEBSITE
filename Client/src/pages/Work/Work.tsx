@@ -1,168 +1,224 @@
-import { ArrowUpRight } from "lucide-react";
+import { useState } from "react";
+import { ArrowUpRight, ExternalLink, Github, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionLabel } from "@/components/section-label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import projects, { type Project } from "@/data/projects";
 import individualProjects, { type IndividualProject } from "@/data/individualProjects";
 import "./Work.scss";
 
-function ProjectCard({ project, reversed }: { project: Project; reversed: boolean }) {
-  return (
-    <article className="project-card grid overflow-hidden lg:grid-cols-2">
-      <div
-        className={`group relative min-h-72 overflow-hidden lg:min-h-[32rem] ${reversed ? "lg:order-2" : ""}`}
-      >
-        <img
-          src={project.image}
-          alt={`${project.title} interface preview`}
-          loading="lazy"
-          width={1280}
-          height={800}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.035]"
-        />
-        <span className="absolute top-5 left-5 rounded-full border border-border bg-background/80 px-3 py-1.5 font-mono text-[10px] backdrop-blur-xl">
-          PROJECT {project.number}
-        </span>
-      </div>
-      <div className="flex flex-col p-6 sm:p-9 lg:p-11">
-        <p className="font-mono text-[10px] tracking-[.16em] text-primary">{project.type}</p>
-        <h3 className="mt-5 text-2xl font-semibold leading-tight sm:text-[1.75rem]">
-          {project.title}
-        </h3>
-        <p className="mt-5 text-sm leading-7 text-muted-foreground">{project.description}</p>
-        <ul className="mt-7 space-y-3 text-sm">
-          {project.highlights.map((item) => (
-            <li key={item} className="flex gap-3">
-              <span className="text-primary">↳</span>
-              {item}
-            </li>
-          ))}
-        </ul>
-        <div className="mt-7 flex flex-wrap gap-2">
-          {project.stack.map((item) => (
-            <span key={item} className="tech-chip">
-              {item}
-            </span>
-          ))}
-        </div>
-        {(project.liveUrl || project.githubUrl) && (
-          <div className="mt-auto flex flex-wrap gap-3 pt-9">
-            {project.liveUrl && (
-              <Button asChild variant="outline" className="rounded-full bg-secondary/60">
-                <a
-                  href={project.liveUrl}
-                  target={project.liveUrl.startsWith("http") ? "_blank" : undefined}
-                  rel="noreferrer"
-                >
-                  Live Demo <ArrowUpRight />
-                </a>
-              </Button>
-            )}
-            {project.githubUrl && (
-              <Button asChild variant="ghost" className="rounded-full">
-                <a href={project.githubUrl} target="_blank" rel="noreferrer">
-                  GitHub <ArrowUpRight />
-                </a>
-              </Button>
-            )}
-          </div>
-        )}
-      </div>
-    </article>
-  );
-}
+type ProjectItem = Project | IndividualProject;
 
-function IndividualProjectCard({
+function ProjectCard({
   project,
-  reversed,
+  onSelect,
 }: {
-  project: IndividualProject;
-  reversed: boolean;
+  project: ProjectItem;
+  onSelect: (project: ProjectItem) => void;
 }) {
+  const category = "type" in project ? project.type : project.category;
   const hasImage = Boolean(project.image);
 
   return (
-    <article
-      className={`project-card grid overflow-hidden ${
-        hasImage ? "lg:grid-cols-2" : "lg:grid-cols-1"
-      }`}
-    >
-      {hasImage && (
-        <div
-          className={`group relative min-h-72 overflow-hidden lg:min-h-[32rem] ${
-            reversed ? "lg:order-2" : ""
-          }`}
-        >
+    <article className="project-card group">
+      {hasImage ? (
+        <div className="project-card-image-wrap">
           <img
             src={project.image}
             alt={`${project.title} interface preview`}
             loading="lazy"
             width={1280}
             height={800}
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.035]"
+            className="project-card-image"
           />
-          <span className="absolute top-5 left-5 rounded-full border border-border bg-background/80 px-3 py-1.5 font-mono text-[10px] backdrop-blur-xl">
-            INDIVIDUAL PROJECT {project.number}
+          <span className="absolute top-3 left-3 rounded-full border border-border/80 bg-background/85 px-2.5 py-1 font-mono text-[10px] backdrop-blur-md">
+            PROJECT {project.number}
           </span>
         </div>
-      )}
-      <div className="flex flex-col p-6 sm:p-9 lg:p-11">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="font-mono text-[10px] tracking-[.16em] text-accent-amber uppercase">
-            {project.category}
-          </p>
-          {!hasImage && (
-            <span className="rounded-full border border-border bg-secondary/60 px-3 py-1 font-mono text-[10px] text-muted-foreground backdrop-blur-xl">
-              INDIVIDUAL PROJECT {project.number}
-            </span>
-          )}
+      ) : (
+        <div className="project-card-image-wrap flex items-center justify-center bg-secondary/30">
+          <span className="font-mono text-xs text-muted-foreground">PROJECT {project.number}</span>
         </div>
-        <h3 className="mt-5 text-2xl font-semibold leading-tight sm:text-[1.75rem]">
+      )}
+
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <p className="font-mono text-[10px] tracking-[.14em] text-primary uppercase">{category}</p>
+        <h3 className="mt-2 text-xl font-bold tracking-tight text-foreground transition-colors group-hover:text-primary">
           {project.title}
         </h3>
-        <p className="mt-5 text-sm leading-7 text-muted-foreground">{project.description}</p>
-        <ul className="mt-7 space-y-3 text-sm">
-          {project.highlights.map((item) => (
-            <li key={item} className="flex gap-3">
-              <span className="text-accent-amber">↳</span>
-              {item}
-            </li>
-          ))}
-        </ul>
-        <div className="mt-7 flex flex-wrap gap-2">
-          {project.stack.map((item) => (
-            <span key={item} className="tech-chip">
-              {item}
+        <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+          {project.description}
+        </p>
+
+        {/* Skills / Tech Stack */}
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {project.stack.slice(0, 4).map((tech) => (
+            <span key={tech} className="project-card-pill">
+              {tech}
             </span>
           ))}
+          {project.stack.length > 4 && (
+            <span className="project-card-pill opacity-75">+{project.stack.length - 4} more</span>
+          )}
         </div>
-        {(project.liveUrl || project.githubUrl) && (
-          <div className="mt-auto flex flex-wrap gap-3 pt-9">
+
+        {/* Actions Row */}
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-2 border-t border-border/40 pt-5">
+          <div className="flex items-center gap-2">
             {project.liveUrl && (
-              <Button asChild variant="outline" className="rounded-full bg-secondary/60">
+              <Button
+                asChild
+                size="sm"
+                variant="outline"
+                className="h-8 rounded-full border-border bg-secondary/60 px-3 text-xs gap-1 hover:border-primary/50"
+              >
                 <a
                   href={project.liveUrl}
                   target={project.liveUrl.startsWith("http") ? "_blank" : undefined}
                   rel="noreferrer"
                 >
-                  Live Demo <ArrowUpRight />
+                  Live Demo <ArrowUpRight className="size-3" />
                 </a>
               </Button>
             )}
             {project.githubUrl && (
-              <Button asChild variant="ghost" className="rounded-full">
-                <a href={project.githubUrl} target="_blank" rel="noreferrer">
-                  GitHub <ArrowUpRight />
+              <Button
+                asChild
+                size="sm"
+                variant="ghost"
+                className="h-8 rounded-full px-2.5 text-xs gap-1 hover:bg-secondary"
+              >
+                <a href={project.githubUrl} target="_blank" rel="noreferrer" aria-label="GitHub">
+                  <Github className="size-3.5" />
                 </a>
               </Button>
             )}
           </div>
-        )}
+          <Button
+            size="sm"
+            onClick={() => onSelect(project)}
+            className="ml-auto h-8 rounded-full px-3.5 text-xs font-medium shadow-sm"
+          >
+            View Details
+          </Button>
+        </div>
       </div>
     </article>
   );
 }
 
+function ProjectDetailsDialog({
+  project,
+  open,
+  onOpenChange,
+}: {
+  project: ProjectItem | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  if (!project) return null;
+
+  const category = "type" in project ? project.type : project.category;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="project-dialog-content max-h-[90vh] max-w-2xl overflow-y-auto p-6 sm:max-w-3xl sm:p-8">
+        {/* Project Image Banner */}
+        {project.image && (
+          <div className="w-full overflow-hidden rounded-xl border border-border/60 bg-muted/20 shadow-md">
+            <img
+              src={project.image}
+              alt={`${project.title} preview`}
+              className="max-h-[380px] w-full object-cover"
+            />
+          </div>
+        )}
+
+        <DialogHeader className="mt-5 text-left">
+          <p className="font-mono text-xs tracking-[.16em] text-primary uppercase">{category}</p>
+          <DialogTitle className="mt-1.5 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+            {project.title}
+          </DialogTitle>
+          <DialogDescription className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+            {project.description}
+          </DialogDescription>
+        </DialogHeader>
+
+        {/* Complete Tech Stack */}
+        <div className="mt-5 flex flex-wrap gap-2">
+          {project.stack.map((tech) => (
+            <span
+              key={tech}
+              className="rounded-full border border-border/80 bg-secondary/60 px-3.5 py-1 font-mono text-xs font-medium text-foreground/90"
+            >
+              {tech}
+            </span>
+          ))}
+        </div>
+
+        {/* Key Features / Highlights */}
+        {project.highlights && project.highlights.length > 0 && (
+          <div className="mt-6">
+            <div className="flex items-center gap-2 text-base font-semibold text-foreground">
+              <Layers className="size-4 text-primary" />
+              <span>Key Features</span>
+            </div>
+            <ul className="mt-3.5 space-y-2.5 text-sm leading-relaxed text-muted-foreground">
+              {project.highlights.map((highlight) => (
+                <li key={highlight} className="flex items-start gap-3">
+                  <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary" />
+                  <span>{highlight}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Divider */}
+        <div className="my-6 h-px w-full bg-border/60" />
+
+        {/* Action Buttons */}
+        <div className="flex flex-wrap items-center gap-3">
+          {project.githubUrl && (
+            <Button
+              asChild
+              variant="outline"
+              className="h-11 rounded-xl border-border bg-secondary/50 px-5 text-sm font-medium hover:border-primary/50 gap-2"
+            >
+              <a href={project.githubUrl} target="_blank" rel="noreferrer">
+                <Github className="size-4" /> Source Code
+              </a>
+            </Button>
+          )}
+          {project.liveUrl && (
+            <Button
+              asChild
+              className="h-11 rounded-xl bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90 gap-2 shadow-[var(--shadow-accent)]"
+            >
+              <a
+                href={project.liveUrl}
+                target={project.liveUrl.startsWith("http") ? "_blank" : undefined}
+                rel="noreferrer"
+              >
+                <ExternalLink className="size-4" /> Live Demo
+              </a>
+            </Button>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function Work() {
+  const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
+
   return (
     <section
       id="work"
@@ -188,12 +244,10 @@ export function Work() {
         </p>
       </div>
 
-      <div className="mt-14 space-y-8">
-        {projects.map((project, index) => (
-          <div key={project.number} className="scroll-reveal reveal-plain">
-            <div className={`project-reveal ${index % 2 === 1 ? "from-right" : "from-left"}`}>
-              <ProjectCard project={project} reversed={index % 2 === 1} />
-            </div>
+      <div className="mt-14 grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {projects.map((project) => (
+          <div key={project.number} className="scroll-reveal reveal-plain flex">
+            <ProjectCard project={project} onSelect={setSelectedProject} />
           </div>
         ))}
       </div>
@@ -221,16 +275,23 @@ export function Work() {
           </p>
         </div>
 
-        <div className="mt-14 space-y-8">
-          {individualProjects.map((project, index) => (
-            <div key={project.number} className="scroll-reveal reveal-plain">
-              <div className={`project-reveal ${index % 2 === 1 ? "from-right" : "from-left"}`}>
-                <IndividualProjectCard project={project} reversed={index % 2 === 1} />
-              </div>
+        <div className="mt-14 grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {individualProjects.map((project) => (
+            <div key={project.number} className="scroll-reveal reveal-plain flex">
+              <ProjectCard project={project} onSelect={setSelectedProject} />
             </div>
           ))}
         </div>
       </div>
+
+      {/* View Details Dialog */}
+      <ProjectDetailsDialog
+        project={selectedProject}
+        open={Boolean(selectedProject)}
+        onOpenChange={(open) => {
+          if (!open) setSelectedProject(null);
+        }}
+      />
     </section>
   );
 }
