@@ -1,4 +1,5 @@
 import taskhubImage from "@/assets/Task_Management.png";
+import portfolioImage from "@/assets/project-admissions.jpg";
 
 export interface IndividualProject {
   number: string;
@@ -49,7 +50,44 @@ const individualProjects: IndividualProject[] = [
 
     liveUrl: "https://task-management-app-awqi.onrender.com/",
     githubUrl: "https://github.com/s-u-r-y-a-n/task_management",
-  }
+  },
+  {
+    number: "02",
+    title: "Personal Developer Portfolio",
+    category: "FULL STACK · PERSONAL PROJECT",
+    image: portfolioImage,
+
+    description:
+      "A responsive full-stack developer portfolio engineered with modern React architecture to showcase technical skills, production applications, professional experience, and an integrated contact pipeline.",
+
+
+    highlights: [
+      "Built a responsive full-stack portfolio using React, TypeScript, TanStack Router, and structured data-driven components",
+      "Designed a glassmorphism UI with dark/light themes, smooth scrolling, section tracking, animations, and interactive dialogs",
+      "Developed an integrated contact workflow connecting the React client with an Express and Nodemailer backend",
+      "Used AI-assisted development and vibe coding for rapid prototyping, ideation, refactoring, debugging, and optimization",
+      "Applied manual coding and review to customize, refine, debug, and validate every section of the application",
+      "Maintained the project with clean version control and publicly available source code on GitHub",
+    ],
+
+    stack: [
+      "React",
+      "TypeScript",
+      "Vite",
+      "TanStack Router",
+      "Tailwind CSS",
+      "SCSS",
+      "Radix UI",
+      "Node.js",
+      "Express",
+      "REST APIs",
+      "Nodemailer",
+      "Render",
+    ],
+
+    liveUrl: "#top",
+    githubUrl: "https://github.com/s-u-r-y-a-n/check-it-off-sweetly",
+  },
 ];
 
 export default individualProjects;
