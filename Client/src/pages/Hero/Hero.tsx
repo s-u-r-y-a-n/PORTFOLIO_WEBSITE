@@ -155,7 +155,12 @@ export function Hero() {
               variant="outline"
               className="h-13 rounded-full border-border bg-secondary/60 px-6 text-sm backdrop-blur-xl"
             >
-              <a href="/surya-n-resume.pdf" download>
+              <a
+                href="/N_Surya_Resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                download="N_Surya_Resume.pdf"
+              >
                 Download resume{" "}
                 <span className="font-mono text-[10px] text-muted-foreground">PDF</span>
               </a>

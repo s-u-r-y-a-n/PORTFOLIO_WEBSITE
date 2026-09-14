@@ -199,7 +199,12 @@ export function Portfolio() {
               variant="outline"
               className="ml-2 h-10 rounded-full border-border bg-secondary/60 px-4 text-xs backdrop-blur-xl"
             >
-              <a href="/surya-n-resume.pdf" download>
+              <a
+                href="/N_Surya_Resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                download="N_Surya_Resume.pdf"
+              >
                 <Download /> Resume{" "}
                 <span className="font-mono text-[10px] text-muted-foreground">PDF</span>
               </a>
@@ -237,8 +242,10 @@ export function Portfolio() {
                 </a>
               ))}
               <a
-                href="/surya-n-resume.pdf"
-                download
+                href="/N_Surya_Resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                download="N_Surya_Resume.pdf"
                 className="mt-1 flex items-center justify-between rounded-lg bg-primary px-3 py-3 text-sm font-semibold text-primary-foreground"
               >
                 Resume (PDF)

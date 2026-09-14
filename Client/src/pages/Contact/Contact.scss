@@ -1,11 +1,9 @@
 .contact-panel {
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  background: linear-gradient(
-    135deg,
-    color-mix(in oklab, var(--primary) 7%, transparent),
-    oklch(1 0 0 / 0.025)
-  );
+  background: linear-gradient(135deg,
+      color-mix(in oklab, var(--primary) 7%, transparent),
+      oklch(1 0 0 / 0.025));
   box-shadow: var(--shadow-glass);
 }
 
@@ -18,7 +16,7 @@
     width: 100%;
     resize: none;
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
+    border-radius: 7px;
     background: var(--secondary);
     padding: 1.45rem 1rem 0.7rem;
     color: var(--foreground);
@@ -50,10 +48,10 @@
       color 180ms ease;
   }
 
-  input:focus + span,
-  input:not(:placeholder-shown) + span,
-  textarea:focus + span,
-  textarea:not(:placeholder-shown) + span {
+  input:focus+span,
+  input:not(:placeholder-shown)+span,
+  textarea:focus+span,
+  textarea:not(:placeholder-shown)+span {
     transform: translateY(-0.62rem) scale(0.76);
     color: var(--primary);
   }
@@ -70,6 +68,7 @@ html.light {
   }
 
   .floating-field {
+
     input,
     textarea {
       background: #ffffff;
@@ -86,10 +85,10 @@ html.light {
       color: #6b797d;
     }
 
-    input:focus + span,
-    input:not(:placeholder-shown) + span,
-    textarea:focus + span,
-    textarea:not(:placeholder-shown) + span {
+    input:focus+span,
+    input:not(:placeholder-shown)+span,
+    textarea:focus+span,
+    textarea:not(:placeholder-shown)+span {
       color: #087a7c;
     }
   }

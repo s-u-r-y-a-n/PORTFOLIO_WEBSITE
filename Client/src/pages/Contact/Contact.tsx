@@ -1,10 +1,9 @@
 import { useState, type FormEvent } from "react";
-import axios from "axios";
+import emailjs from "@emailjs/browser";
 import { toast } from "sonner";
 import { CheckCircle2, Loader2, Mail, MessageCircle, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionLabel } from "@/components/section-label";
-import { sendContactMessage } from "@/lib/contact.api";
 import "./Contact.scss";
 
 function FloatingField({
@@ -46,28 +45,29 @@ export function Contact() {
     if (sent) setSent(false);
   };
 
-  const submitContact = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (isSubmitting) return;
 
     const form = event.currentTarget;
-    const nameInput = form.elements.namedItem("name") as HTMLInputElement | null;
+    const usernameInput = (form.elements.namedItem("username") ||
+      form.elements.namedItem("name")) as HTMLInputElement | null;
     const emailInput = form.elements.namedItem("email") as HTMLInputElement | null;
     const messageInput = form.elements.namedItem("message") as HTMLTextAreaElement | null;
 
     // Clear any prior custom validity messages
-    nameInput?.setCustomValidity("");
+    usernameInput?.setCustomValidity("");
     emailInput?.setCustomValidity("");
     messageInput?.setCustomValidity("");
 
-    const name = nameInput?.value.trim() ?? "";
+    const username = usernameInput?.value.trim() ?? "";
     const email = emailInput?.value.trim() ?? "";
     const message = messageInput?.value.trim() ?? "";
 
     let hasValidationError = false;
 
-    if (!name) {
-      nameInput?.setCustomValidity("Please enter your name.");
+    if (!username) {
+      usernameInput?.setCustomValidity("Please enter your name.");
       hasValidationError = true;
     }
 
@@ -86,25 +86,36 @@ export function Contact() {
       return;
     }
 
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !templateId || !publicKey) {
+      toast.error("EmailJS environment variables are not configured.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const response = await sendContactMessage({ name, email, message });
-      toast.success(response.message || "Message sent successfully!");
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          username,
+          name: username,
+          email,
+          message,
+        },
+        publicKey,
+      );
+
+      toast.success("Message sent successfully!");
       setSent(true);
       form.reset();
     } catch (error: unknown) {
-      let errorMessage = "Failed to send message. Please try again later.";
-      if (axios.isAxiosError(error)) {
-        if (error.response?.data?.message) {
-          errorMessage = error.response.data.message;
-        } else if (error.code === "ERR_NETWORK" || !error.response) {
-          errorMessage = "Unable to connect to the server. Please check your network connection.";
-        }
-      } else if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-      toast.error(errorMessage);
+      console.error("EmailJS submission error:", error);
+      toast.error("Failed to send message. Please try again later.");
     } finally {
       setIsSubmitting(false);
     }
@@ -153,13 +164,13 @@ export function Contact() {
           </div>
         </div>
         <form
-          onSubmit={submitContact}
+          onSubmit={handleSubmit}
           className="reveal-zoom d-2 grid gap-5"
           aria-label="Contact form"
         >
           <FloatingField
             label="Your name"
-            name="name"
+            name="username"
             type="text"
             required
             disabled={isSubmitting}
