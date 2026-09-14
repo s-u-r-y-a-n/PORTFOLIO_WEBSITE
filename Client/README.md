@@ -1,24 +1,34 @@
-# My Task Hub
+# Surya N — Full Stack Developer Portfolio (Client)
 
-create a ui for task managament(similar to google tasks) web application
+A modern, high-performance portfolio web application showcasing projects, technical skills, architecture patterns, and professional experience.
 
-This project was built with [Lovable](https://lovable.dev).
+Built with **React**, **TanStack Start**, **Vite**, **TypeScript**, and modern CSS.
 
-## Build with Lovable
+## Features
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/ceeba646-da6d-46fc-81ce-6d563a0aeeb5).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+- **Responsive Architecture**: Optimized for mobile, tablet, and widescreen desktop devices.
+- **Obsidian Dark & Light Theme**: Polished glassmorphism design system with smooth theme switching.
+- **Project Showcase**: Interactive stacked project cards with deep-dive details modal dialogs.
+- **Modular Sections**: Organized under `src/pages/` (Hero, About, Skills, Architecture, Work, Experience, Contact).
+- **Smooth Navigation**: Custom damped scrolling and dynamic active section tracking.
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+### Prerequisites
+- Node.js 20+
+- npm
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+### Setup
+```bash
+# Install dependencies
+npm install
+
+# Start local development server
 npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```

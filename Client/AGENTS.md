@@ -1,10 +1,7 @@
-<!-- LOVABLE:BEGIN -->
-> [!IMPORTANT]
-> This project is connected to [Lovable](https://lovable.dev). Avoid rewriting
-> published git history — force pushing, or rebasing/amending/squashing commits
-> that are already pushed — as it rewrites history on Lovable's side and the
-> user will likely lose their project history.
->
-> Commits you push to the connected branch sync back to Lovable and show up in
-> the editor, so keep the branch in a working state.
-<!-- LOVABLE:END -->
+# Client Agent Guidelines
+
+- **Framework**: TanStack Start with Vite and SSR enabled.
+- **Routing**: File-based routes located in `src/routes/`. The entry root layout is `src/routes/__root.tsx`.
+- **Components**: Section components are organized under `src/pages/<SectionName>/` with paired `.tsx` and `.scss` files.
+- **Styling**: Global styles and Tailwind tokens are managed in `src/styles.css`.
+- **Server Separation**: The client connects to the independent backend API server configured via `VITE_API_BASE_URL`.
