@@ -67,7 +67,7 @@ const projects: Project[] = [
       "Axios"
     ],
 
-    liveUrl: "#contact",
+    liveUrl: "https://app.primeelectriks.com/",
   },
   {
     number: "03",
